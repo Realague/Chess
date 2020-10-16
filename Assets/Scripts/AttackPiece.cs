@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovePieces : MonoBehaviour
+public class AttackPiece : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -18,8 +18,8 @@ public class MovePieces : MonoBehaviour
 
     void OnMouseDown()
     {
-        GameMaster.instance.MovePiece(transform.position);
         GameObject parent = GameMaster.instance.selectedPiece;
+        GameMaster.instance.DeletePiece(transform.position);
         parent.transform.position = transform.position;
         if (parent.GetComponent<Piece>().type == PieceType.Pawn)
         {

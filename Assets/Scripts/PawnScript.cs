@@ -1,20 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class PawnScript : MonoBehaviour
 {
 
-    public GameObject highlightedMove;
-
-    public GameObject highlightedMoveKill;
-
-    private bool isFirstMove = true;
-
-    private bool isSelected = false;
+    public bool isFirstMove;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        isFirstMove = true;
     }
 
     // Update is called once per frame
@@ -25,20 +20,20 @@ public class PawnScript : MonoBehaviour
 
     void OnMouseDown()
     {
-        isSelected = true;
-        GameObject obj1 = null;
-        if (isFirstMove)
+        if (GameMaster.instance.selectedPiece == gameObject)
         {
-            obj1 = Instantiate(highlightedMove, transform.position + new Vector3(0, 0, 2), new Quaternion(45, 0, 0, 45));
+            GameMaster.instance.DeleteMoves();
+            return;
         }
-        GameObject obj = Instantiate(highlightedMove, transform.position + new Vector3(0, 0, 1), new Quaternion(45, 0, 0, 45));
-
-        /*if (isFirstMove)
+        else
         {
-            Destroy(obj1);
+            if (GameMaster.instance.CreateMovePawn(transform.position + new Vector3(0, 0, 1), this.gameObject) && isFirstMove == true)
+            {
+                GameMaster.instance.CreateMovePawn(transform.position + new Vector3(0, 0, 2), this.gameObject);
+            }
+            GameMaster.instance.CreateAttackMovePawn(transform.position + new Vector3(1, 0, 1), this.gameObject);
+            GameMaster.instance.CreateAttackMovePawn(transform.position + new Vector3(-1, 0, 1), this.gameObject);
         }
-        Destroy(obj);
-        isFirstMove = false;*/
     }
 
 }
