@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class KingScript : MonoBehaviour
 {
+
+    public bool isFirstMove = true;
+
     private static Vector3[] positions = new Vector3[] { new Vector3(1, 0, 1), new Vector3(-1, 0, 1), new Vector3(1, 0, -1), new Vector3(-1, 0, -1), new Vector3(1, 0, 0), new Vector3(-1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 0, -1), };
 
     // Start is called before the first frame update
@@ -18,7 +21,7 @@ public class KingScript : MonoBehaviour
         
     }
 
-    public static List<KeyValuePair<Vector3, MoveType>> KingMove(Vector3 position, Dictionary<Vector3, GameObject> pieces, GameObject piece)
+    public static List<KeyValuePair<Vector3, MoveType>> KingMovement(Vector3 position, Board board, GameObject piece, bool checkAttack)
     {
         List<KeyValuePair<Vector3, MoveType>> movements = new List<KeyValuePair<Vector3, MoveType>>();
         MoveType moveType = MoveType.Move;
@@ -26,10 +29,10 @@ public class KingScript : MonoBehaviour
 
         foreach (Vector3 pos in positions)
         {
-            moveType = PieceMovementHelper.CheckMove(position + pos, pieces, piece);
-            if (moveType != MoveType.Blocked)
+            moveType = board.CheckMove(position + pos, piece);
+            if (moveType != MoveType.Blocked && (!board.CheckAttack(position + pos, piece.GetComponent<Piece>().side) || !checkAttack))
             {
-                movements.Add(new KeyValuePair<Vector3, MoveType>(position, moveType));
+                movements.Add(new KeyValuePair<Vector3, MoveType>(position + pos, moveType));
             }
         }
 
@@ -45,7 +48,11 @@ public class KingScript : MonoBehaviour
         }
         else
         {
-            
+            var movements = KingMovement(transform.position, GameMaster.instance.board, this.gameObject, true);
+            if (movements.Count != 0)
+            {
+                GameMaster.instance.CreateMoves(movements, this.gameObject);
+            }
         }
     }
 }

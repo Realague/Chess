@@ -25,6 +25,14 @@ public class AttackPiece : MonoBehaviour
         {
             PawnScript pawnScript = parent.GetComponent<PawnScript>();
             pawnScript.isFirstMove = false;
+        } else if (parent.GetComponent<Piece>().type == PieceType.Rook)
+        {
+            RookScript rookScript = parent.GetComponent<RookScript>();
+            rookScript.isFirstMove = false;
+        } else if (parent.GetComponent<Piece>().type == PieceType.King)
+        {
+            KingScript kingScript = parent.GetComponent<KingScript>();
+            kingScript.isFirstMove = false;
         }
         GameMaster.instance.DeleteMoves();
     }

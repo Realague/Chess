@@ -2,5 +2,7 @@
 {
     Move,
     Attack,
-    Blocked
+    Blocked,
+    Castling,
+    MovePawn
 }

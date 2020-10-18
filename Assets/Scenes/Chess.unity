@@ -923,6 +923,8 @@ MonoBehaviour:
     type: 3}
   highlightedAttack: {fileID: 5427269372907503654, guid: 1a609b1e2a67dcb4e9575264dc1fd17e,
     type: 3}
+  highlightedCastling: {fileID: 686540095282983293, guid: 16051118adc946145b73190c708d4720,
+    type: 3}
   selectedPiece: {fileID: 0}
   lightPieces:
   - {fileID: 1575160035}
@@ -1137,7 +1139,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4239372230150158, guid: 27d2608cb94ae2d44811af52793c3562, type: 3}
       propertyPath: m_RootOrder
-      value: 14
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4239372230150158, guid: 27d2608cb94ae2d44811af52793c3562, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2427,7 +2429,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4607164402640316, guid: be3573ba2ba53ea4f8979e64874c493d, type: 3}
       propertyPath: m_RootOrder
-      value: 15
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4607164402640316, guid: be3573ba2ba53ea4f8979e64874c493d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

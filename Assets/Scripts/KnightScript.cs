@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class KnightScript : MonoBehaviour
 {
-    private static Vector3[] positions = new Vector3[] { new Vector3(2, 0, 1), new Vector3(2, 0, -1), new Vector3(2, 0, 1), new Vector3(-2, 0, 1), new Vector3(-2, 0, 1), new Vector3(1, 0, 2), new Vector3(1, 0, -2), new Vector3(-1, 0, 2) };
+    private static Vector3[] positions = new Vector3[] { new Vector3(2, 0, 1), new Vector3(2, 0, -1), new Vector3(-2, 0, -1), new Vector3(-2, 0, 1), new Vector3(-1, 0, -2), new Vector3(1, 0, 2), new Vector3(1, 0, -2), new Vector3(-1, 0, 2) };
 
     // Start is called before the first frame update
     void Start()
@@ -17,7 +17,7 @@ public class KnightScript : MonoBehaviour
 
     }
 
-    public static List<KeyValuePair<Vector3, MoveType>> KnightMovement(Vector3 position, Dictionary<Vector3, GameObject> pieces, GameObject piece)
+    public static List<KeyValuePair<Vector3, MoveType>> KnightMovement(Vector3 position, Board board, GameObject piece)
     {
         List<KeyValuePair<Vector3, MoveType>> movements = new List<KeyValuePair<Vector3, MoveType>>();
         MoveType moveType = MoveType.Move;
@@ -25,10 +25,10 @@ public class KnightScript : MonoBehaviour
 
         foreach (Vector3 pos in positions)
         {
-            moveType = PieceMovementHelper.CheckMove(position + pos, pieces, piece);
+            moveType = board.CheckMove(position + pos, piece);
             if (moveType != MoveType.Blocked)
             {
-                movements.Add(new KeyValuePair<Vector3, MoveType>(position, moveType));
+                movements.Add(new KeyValuePair<Vector3, MoveType>(position + pos, moveType));
             }
         }
 
@@ -44,7 +44,7 @@ public class KnightScript : MonoBehaviour
         }
         else
         {
-            var movements = KnightMovement(transform.position, GameMaster.instance.pieces, this.gameObject);
+            var movements = KnightMovement(transform.position, GameMaster.instance.board, this.gameObject);
             if (movements.Count != 0)
             {
                 GameMaster.instance.CreateMoves(movements, this.gameObject);

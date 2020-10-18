@@ -16,11 +16,11 @@ public class QueenScript : MonoBehaviour
         
     }
 
-    public static List<KeyValuePair<Vector3, MoveType>> QueenMovement(Vector3 position, Dictionary<Vector3, GameObject> pieces, GameObject piece)
+    public static List<KeyValuePair<Vector3, MoveType>> QueenMovement(Vector3 position, Board board, GameObject piece)
     {
         List<KeyValuePair<Vector3, MoveType>> movements = new List<KeyValuePair<Vector3, MoveType>>();
-        movements = RookScript.RookMovement(position, pieces, piece);
-        movements.AddRange(BishopScript.BishopMovement(position, pieces, piece));
+        movements = RookScript.RookMovement(position, board, piece);
+        movements.AddRange(BishopScript.BishopMovement(position, board, piece));
         return movements;
     }
 
@@ -33,7 +33,7 @@ public class QueenScript : MonoBehaviour
         }
         else
         {
-            var movements = QueenMovement(transform.position, GameMaster.instance.pieces, this.gameObject);
+            var movements = QueenMovement(transform.position, GameMaster.instance.board, this.gameObject);
             if (movements.Count != 0)
             {
                 GameMaster.instance.CreateMoves(movements, this.gameObject);
