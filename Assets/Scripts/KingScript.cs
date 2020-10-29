@@ -30,7 +30,9 @@ public class KingScript : MonoBehaviour
         foreach (Vector3 pos in positions)
         {
             moveType = board.CheckMove(position + pos, piece);
-            if (moveType != MoveType.Blocked && (!board.CheckAttack(position + pos, piece.GetComponent<Piece>().side) || !checkAttack))
+            Board boardCopy = new Board(board);
+            boardCopy.MovePiece(position + pos, piece);
+            if (moveType != MoveType.Blocked && (!checkAttack || !boardCopy.CheckAttack(position + pos, piece.GetComponent<Piece>().side)))
             {
                 movements.Add(new KeyValuePair<Vector3, MoveType>(position + pos, moveType));
             }
@@ -41,17 +43,20 @@ public class KingScript : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (GameMaster.instance.selectedPiece == gameObject)
+        if (GetComponent<Piece>().side == GameMaster.instance.turn)
         {
-            GameMaster.instance.DeleteMoves();
-            return;
-        }
-        else
-        {
-            var movements = KingMovement(transform.position, GameMaster.instance.board, this.gameObject, true);
-            if (movements.Count != 0)
+            if (GameMaster.instance.selectedPiece == gameObject)
             {
-                GameMaster.instance.CreateMoves(movements, this.gameObject);
+                GameMaster.instance.DeleteMoves();
+                return;
+            }
+            else
+            {
+                var movements = KingMovement(transform.position, GameMaster.instance.board, this.gameObject, true);
+                if (movements.Count != 0)
+                {
+                    GameMaster.instance.CreateMoves(movements, this.gameObject);
+                }
             }
         }
     }

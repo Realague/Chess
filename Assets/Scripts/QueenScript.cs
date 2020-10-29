@@ -26,17 +26,20 @@ public class QueenScript : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (GameMaster.instance.selectedPiece == gameObject)
+        if (GetComponent<Piece>().side == GameMaster.instance.turn)
         {
-            GameMaster.instance.DeleteMoves();
-            return;
-        }
-        else
-        {
-            var movements = QueenMovement(transform.position, GameMaster.instance.board, this.gameObject);
-            if (movements.Count != 0)
+            if (GameMaster.instance.selectedPiece == gameObject)
             {
-                GameMaster.instance.CreateMoves(movements, this.gameObject);
+                GameMaster.instance.DeleteMoves();
+                return;
+            }
+            else
+            {
+                var movements = QueenMovement(transform.position, GameMaster.instance.board, this.gameObject);
+                if (movements.Count != 0)
+                {
+                    GameMaster.instance.CreateMoves(movements, this.gameObject);
+                }
             }
         }
     }

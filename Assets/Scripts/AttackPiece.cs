@@ -35,5 +35,6 @@ public class AttackPiece : MonoBehaviour
             kingScript.isFirstMove = false;
         }
         GameMaster.instance.DeleteMoves();
+        GameMaster.instance.turn = GameMaster.instance.turn == Color.Light ? Color.Dark : Color.Light;
     }
 }

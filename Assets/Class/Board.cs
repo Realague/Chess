@@ -24,6 +24,11 @@ public class Board
         }
     }
 
+    public Board(Board board)
+    {
+        pieces = new Dictionary<Vector3, GameObject>(board.pieces);
+    }
+
     public void MovePiece(Vector3 position, GameObject piece)
     {
         pieces[position] = pieces[piece.transform.position];

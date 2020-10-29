@@ -18,7 +18,7 @@ public class GameMaster : MonoBehaviour
 
     private bool isPlayerTurn = true;
 
-    private bool isPlayerStarting = true;
+    public Color turn = Color.Light;
 
     public GameObject selectedPiece;
 
@@ -50,20 +50,11 @@ public class GameMaster : MonoBehaviour
         board = new Board(lightPieces, darkPieces);
         selectedPiece = null;
         moves = new List<GameObject>();
-
-        if (!isPlayerStarting)
-        {
-            isPlayerTurn = false;
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isPlayerTurn)
-        {
-
-        }
     }
 
     public void CreateMoves(List<KeyValuePair<Vector3, MoveType>> movements, GameObject piece)
