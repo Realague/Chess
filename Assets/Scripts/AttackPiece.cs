@@ -21,19 +21,8 @@ public class AttackPiece : MonoBehaviour
         GameObject parent = GameMaster.instance.selectedPiece;
         GameMaster.instance.DeletePiece(transform.position);
         parent.transform.position = transform.position;
-        if (parent.GetComponent<Piece>().type == PieceType.Pawn)
-        {
-            PawnScript pawnScript = parent.GetComponent<PawnScript>();
-            pawnScript.isFirstMove = false;
-        } else if (parent.GetComponent<Piece>().type == PieceType.Rook)
-        {
-            RookScript rookScript = parent.GetComponent<RookScript>();
-            rookScript.isFirstMove = false;
-        } else if (parent.GetComponent<Piece>().type == PieceType.King)
-        {
-            KingScript kingScript = parent.GetComponent<KingScript>();
-            kingScript.isFirstMove = false;
-        }
+        parent.GetComponent<Piece>().isFirstMove = false;
+
         GameMaster.instance.DeleteMoves();
         GameMaster.instance.turn = GameMaster.instance.turn == Color.Light ? Color.Dark : Color.Light;
     }

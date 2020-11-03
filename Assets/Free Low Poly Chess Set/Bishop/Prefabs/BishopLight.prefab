@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33283243407640938}
   - component: {fileID: 23450358156907978}
   - component: {fileID: 7840738296134538622}
+  - component: {fileID: 7804890517452905252}
   m_Layer: 0
   m_Name: BishopLight
   m_TagString: Untagged
@@ -94,3 +95,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   side: 1
+  isFirstMove: 1
+--- !u!64 &7804890517452905252
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028868664329696}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 9872e0b509ff2d04299e3fe92e0deacc, type: 3}

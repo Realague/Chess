@@ -23,10 +23,10 @@ public class GameMaster : MonoBehaviour
     public GameObject selectedPiece;
 
     [SerializeField]
-    private List<GameObject> lightPieces;
+    private List<GameObject> lightPieces = new List<GameObject>();
 
     [SerializeField]
-    private List<GameObject> darkPieces;
+    private List<GameObject> darkPieces = new List<GameObject>();
 
     public Board board;
 
@@ -96,13 +96,4 @@ public class GameMaster : MonoBehaviour
         Destroy(board.CheckCase(position));
         board.MovePiece(position, selectedPiece);
     }
-
-    /*private bool SimulateKing(GameObject piece, Vector3 position)
-    {
-        Dictionary<Vector3, GameObject> piecesCopy = pieces;
-        piecesCopy[position] = piecesCopy[piece.transform.position];
-        piecesCopy.Remove(piece.transform.position);
-
-
-    }*/
 }

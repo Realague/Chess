@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 23259757595946094}
   - component: {fileID: 6865527222143423342}
   - component: {fileID: -8569587280898536079}
-  - component: {fileID: -6922259606194478639}
   m_Layer: 0
   m_Name: QueenDark
   m_TagString: Untagged
@@ -96,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 4
   side: 0
+  isFirstMove: 1
 --- !u!64 &-8569587280898536079
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -110,15 +110,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 8d213db23e89f6b4fa3d427f07a32b13, type: 3}
---- !u!114 &-6922259606194478639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1471985601831630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0292f324d5ceee647922eedc3ffa1be8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

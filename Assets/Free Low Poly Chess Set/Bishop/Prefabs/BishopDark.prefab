@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 23625353231150336}
   - component: {fileID: -3908846097346261019}
   - component: {fileID: 7907025038387324345}
-  - component: {fileID: -7680085949880435277}
   m_Layer: 0
   m_Name: BishopDark
   m_TagString: Untagged
@@ -96,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   side: 0
+  isFirstMove: 1
 --- !u!64 &7907025038387324345
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -110,15 +110,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 9872e0b509ff2d04299e3fe92e0deacc, type: 3}
---- !u!114 &-7680085949880435277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1672242659374470}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe7cf42adebdcce4b9b9844a22601ac5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

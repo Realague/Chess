@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33080485989685302}
   - component: {fileID: 23126716194031272}
   - component: {fileID: 4310917318809001625}
+  - component: {fileID: -1856989569998468443}
   m_Layer: 0
   m_Name: KingLight
   m_TagString: Untagged
@@ -94,3 +95,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 5
   side: 1
+  isFirstMove: 1
+--- !u!64 &-1856989569998468443
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389686872840900}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 0d4dc18442ed9d14698239a5a964f27f, type: 3}

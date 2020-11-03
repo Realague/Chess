@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-enum Side
+public enum Color
 {
     Dark,
     Light

@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 23106028074910512}
   - component: {fileID: -1430466656300692414}
   - component: {fileID: 7163364504266363926}
-  - component: {fileID: 8895604152139576766}
   m_Layer: 0
   m_Name: KingDark
   m_TagString: Untagged
@@ -96,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 5
   side: 0
+  isFirstMove: 1
 --- !u!64 &7163364504266363926
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -110,15 +110,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 0d4dc18442ed9d14698239a5a964f27f, type: 3}
---- !u!114 &8895604152139576766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1810274083847610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36eda21440d78ca449adc33eba91c422, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

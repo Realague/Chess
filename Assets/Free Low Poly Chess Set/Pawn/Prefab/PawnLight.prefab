@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33106061487518736}
   - component: {fileID: 23160403841118764}
   - component: {fileID: 8765258984216374877}
-  - component: {fileID: -4684770726858957250}
+  - component: {fileID: 2044707041035980836}
   m_Layer: 0
   m_Name: PawnLight
   m_TagString: Untagged
@@ -95,16 +95,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   side: 1
---- !u!114 &-4684770726858957250
-MonoBehaviour:
+  isFirstMove: 1
+--- !u!64 &2044707041035980836
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1006356879557798}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 499392efaff68bf428b6e6fa888efb4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isFirstMove: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 1ae3b6cad3254b848942cea678f244c7, type: 3}

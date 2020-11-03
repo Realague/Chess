@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4933460620124638}
   - component: {fileID: 33039705604623312}
   - component: {fileID: 23288229226541454}
-  - component: {fileID: 258689653657330530}
   - component: {fileID: 3553291232393835710}
   - component: {fileID: -7557067792598732736}
   m_Layer: 0
@@ -82,23 +81,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &258689653657330530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1867195236767680}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 499392efaff68bf428b6e6fa888efb4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlightedMove: {fileID: 5427269372907503654, guid: fbed0500015b5b449b10544cc7231559,
-    type: 3}
-  highlightedMoveKill: {fileID: 5427269372907503654, guid: 1a609b1e2a67dcb4e9575264dc1fd17e,
-    type: 3}
-  isFirstMove: 1
 --- !u!114 &3553291232393835710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   side: 0
+  isFirstMove: 1
 --- !u!64 &-7557067792598732736
 MeshCollider:
   m_ObjectHideFlags: 0
