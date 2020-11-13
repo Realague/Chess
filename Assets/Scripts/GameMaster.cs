@@ -14,6 +14,10 @@ public class GameMaster : MonoBehaviour
     [SerializeField]
     private GameObject highlightedCastling;
 
+    public GameObject queenDark;
+
+    public GameObject queenLight;
+
     public static GameMaster instance = null;
 
     private bool isPlayerTurn = true;
@@ -89,6 +93,16 @@ public class GameMaster : MonoBehaviour
             Destroy(move);
         }
         selectedPiece = null;
+    }
+
+    public void Move(Vector3 position)
+    {
+        board.MovePiece(position, selectedPiece);
+        GameObject parent = selectedPiece;
+        parent.transform.position = position;
+        parent.GetComponent<Piece>().isFirstMove = false;
+        DeleteMoves();
+        turn = turn == Color.Light ? Color.Dark : Color.Light;
     }
 
     public void DeletePiece(Vector3 position)

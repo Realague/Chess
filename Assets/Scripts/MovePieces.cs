@@ -18,11 +18,6 @@ public class MovePieces : MonoBehaviour
 
     void OnMouseDown()
     {
-        GameMaster.instance.board.MovePiece(transform.position, GameMaster.instance.selectedPiece);
-        GameObject parent = GameMaster.instance.selectedPiece;
-        parent.transform.position = transform.position;
-        parent.GetComponent<Piece>().isFirstMove = false;
-        GameMaster.instance.DeleteMoves();
-        GameMaster.instance.turn = GameMaster.instance.turn == Color.Light ? Color.Dark : Color.Light;
+
     }
 }
