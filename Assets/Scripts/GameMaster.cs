@@ -98,16 +98,32 @@ public class GameMaster : MonoBehaviour
     public void Move(Vector3 position)
     {
         board.MovePiece(position, selectedPiece);
-        GameObject parent = selectedPiece;
-        parent.transform.position = position;
-        parent.GetComponent<Piece>().isFirstMove = false;
-        DeleteMoves();
+        selectedPiece.transform.position = position;
+        selectedPiece.GetComponent<Piece>().isFirstMove = false;
         turn = turn == Color.Light ? Color.Dark : Color.Light;
+        if (selectedPiece.GetComponent<Piece>().type == PieceType.Pawn)
+        {
+            HandlePawnFinish(position);
+        }
+        DeleteMoves();
+    }
+
+    private void HandlePawnFinish(Vector3 position)
+    {
+        if (selectedPiece.GetComponent<Piece>().side == Color.Light && position.z == 0)
+        {
+            DeletePiece(position);
+            board.AddPiece(Instantiate(queenLight, position, new Quaternion(0, 180, 0, 0)));
+        } else if (selectedPiece.GetComponent<Piece>().side == Color.Dark && position.z == 7)
+        {
+            DeletePiece(position);
+            board.AddPiece(Instantiate(queenDark, position, new Quaternion(0, 0, 0, 0)));
+        }
     }
 
     public void DeletePiece(Vector3 position)
     {
         Destroy(board.CheckCase(position));
-        board.MovePiece(position, selectedPiece);
+        board.RemovePiece(position);
     }
 }

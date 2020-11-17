@@ -18,12 +18,7 @@ public class AttackPiece : MonoBehaviour
 
     void OnMouseDown()
     {
-        GameObject parent = GameMaster.instance.selectedPiece;
         GameMaster.instance.DeletePiece(transform.position);
-        parent.transform.position = transform.position;
-        parent.GetComponent<Piece>().isFirstMove = false;
-
-        GameMaster.instance.DeleteMoves();
-        GameMaster.instance.turn = GameMaster.instance.turn == Color.Light ? Color.Dark : Color.Light;
+        GameMaster.instance.Move(transform.position);
     }
 }

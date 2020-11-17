@@ -31,6 +31,16 @@ public class Board
         pieces = new Dictionary<Vector3, GameObject>(board.pieces);
     }
 
+    public void AddPiece(GameObject piece)
+    {
+        pieces.Add(piece.transform.position, piece);
+    }
+
+    public void RemovePiece(Vector3 position)
+    {
+        pieces.Remove(position);
+    }
+
     public void MovePiece(Vector3 position, GameObject piece)
     {
         pieces[position] = pieces[piece.transform.position];
@@ -290,7 +300,6 @@ public class Board
     {
         List<KeyValuePair<Vector3, MoveType>> movements = new List<KeyValuePair<Vector3, MoveType>>();
         movements = RookMovement(position, piece);
-        //printMovements(movements);
         movements.AddRange(BishopMovement(position, piece));
         return movements;
     }

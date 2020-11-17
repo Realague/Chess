@@ -18,6 +18,6 @@ public class MovePieces : MonoBehaviour
 
     void OnMouseDown()
     {
-
+        GameMaster.instance.Move(transform.position);
     }
 }
