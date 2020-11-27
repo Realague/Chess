@@ -59,6 +59,10 @@ public class GameMaster : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (turn == Color.Dark)
+        {
+
+        }
     }
 
     public void CreateMoves(List<KeyValuePair<Vector3, MoveType>> movements, GameObject piece)
