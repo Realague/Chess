@@ -4,14 +4,21 @@ using System.Collections.Generic;
 
 public class MinMax
 {
-    public int depth = 6;
+    private static int depth = 6;
 
     public Board board;
 
     public Color color;
 
     public Random rand = new Random();
-    public Movement MinMax()
+
+    public MinMax(Board board, Color color)
+    {
+        this.color = color;
+        this.board = board;
+    }
+
+    public Movement MinMaxAlgorithm()
     {
         List<Movement> movements = board.GetAllMovements();
         Movement selectedMove = null;

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MovePieces : MonoBehaviour
 {
@@ -18,6 +16,8 @@ public class MovePieces : MonoBehaviour
 
     void OnMouseDown()
     {
-        GameMaster.instance.Move(transform.position);
+       new Movement(transform.position, GameMaster.instance.selectedPiece,
+             GameMaster.instance.selectedPiece.GetComponentInParent<Piece>().type == PieceType.Pawn ? MoveType.MovePawn : MoveType.Move)
+            .DoMovement(GameMaster.instance.board, false);
     }
 }

@@ -14,9 +14,9 @@ public class GameMaster : MonoBehaviour
     [SerializeField]
     private GameObject highlightedCastling;
 
-    public GameObject queenDark;
+    public static GameObject queenDark;
 
-    public GameObject queenLight;
+    public static GameObject queenLight;
 
     public static GameMaster instance = null;
 
@@ -36,8 +36,12 @@ public class GameMaster : MonoBehaviour
 
     private List<GameObject> moves;
 
+    private MinMax minMax;
+
+
     void Awake()
     {
+        minMax = new MinMax(board, Color.Dark);
         if (instance == null)
         {
             instance = this;
@@ -61,11 +65,13 @@ public class GameMaster : MonoBehaviour
     {
         if (turn == Color.Dark)
         {
-
+            minMax.board = board;
+            Movement movement = minMax.MinMaxAlgorithm();
+            movement.DoMovement(board, false);
         }
     }
 
-    public void CreateMoves(List<KeyValuePair<Vector3, MoveType>> movements, GameObject piece)
+    public void CreateMoves(List<Movement> movements, GameObject piece)
     {
         if (selectedPiece != piece && selectedPiece != null)
         {
@@ -73,19 +79,19 @@ public class GameMaster : MonoBehaviour
             return;
         }
         selectedPiece = piece;
-        foreach (KeyValuePair<Vector3, MoveType> valuePair in movements)
+        foreach (Movement movement in movements)
         {
-            if (valuePair.Value == MoveType.Attack)
+            if (movement.moveType == MoveType.Attack)
             {
-                moves.Add(Instantiate(highlightedAttack, valuePair.Key, new Quaternion(45, 0, 0, 45)));
+                moves.Add(Instantiate(highlightedAttack, movement.position, new Quaternion(45, 0, 0, 45)));
             }
-            else if (valuePair.Value == MoveType.Move || valuePair.Value == MoveType.MovePawn)
+            else if (movement.moveType == MoveType.Move || movement.moveType == MoveType.MovePawn)
             {
-                moves.Add(Instantiate(highlightedMove, valuePair.Key, new Quaternion(45, 0, 0, 45)));
+                moves.Add(Instantiate(highlightedMove, movement.position, new Quaternion(45, 0, 0, 45)));
             }
-            else if (valuePair.Value == MoveType.Castling)
+            else if (movement.moveType == MoveType.Castling)
             {
-                moves.Add(Instantiate(highlightedCastling, valuePair.Key, new Quaternion(45, 0, 0, 45)));
+                moves.Add(Instantiate(highlightedCastling, movement.position, new Quaternion(45, 0, 0, 45)));
             }
         }
     }
@@ -101,33 +107,25 @@ public class GameMaster : MonoBehaviour
 
     public void Move(Vector3 position)
     {
-        board.MovePiece(position, selectedPiece);
-        selectedPiece.transform.position = position;
-        selectedPiece.GetComponent<Piece>().isFirstMove = false;
-        turn = turn == Color.Light ? Color.Dark : Color.Light;
-        if (selectedPiece.GetComponent<Piece>().type == PieceType.Pawn)
-        {
-            HandlePawnFinish(position);
-        }
-        DeleteMoves();
+
     }
 
-    private void HandlePawnFinish(Vector3 position)
+    public void EndTurn()
     {
-        if (selectedPiece.GetComponent<Piece>().side == Color.Light && position.z == 0)
-        {
-            DeletePiece(position);
-            board.AddPiece(Instantiate(queenLight, position, new Quaternion(0, 180, 0, 0)));
-        } else if (selectedPiece.GetComponent<Piece>().side == Color.Dark && position.z == 7)
-        {
-            DeletePiece(position);
-            board.AddPiece(Instantiate(queenDark, position, new Quaternion(0, 0, 0, 0)));
-        }
+        selectedPiece.GetComponent<Piece>().isFirstMove = false;
+        selectedPiece = null;
+        turn = turn == Color.Light ? Color.Dark : Color.Light;
+        DeleteMoves();
     }
 
     public void DeletePiece(Vector3 position)
     {
         Destroy(board.CheckCase(position));
         board.RemovePiece(position);
+    }
+
+    public static GameObject Instantiate(GameObject gameObject, Vector3 position, Quaternion quaternion)
+    {
+        return Object.Instantiate(gameObject, position, quaternion);
     }
 }
