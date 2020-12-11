@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 public class MinMax
@@ -20,7 +19,7 @@ public class MinMax
 
     public Movement MinMaxAlgorithm()
     {
-        List<Movement> movements = board.GetAllMovements();
+        List<Movement> movements = board.GetAllMovements(GameMaster.instance.turn);
         Movement selectedMove = null;
         int score = 0;
         int tmpScore = 0;

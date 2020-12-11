@@ -41,10 +41,13 @@ public class Board
         pieces.Remove(position);
     }
 
-    public void MovePiece(Vector3 position, GameObject piece)
+    public void MovePiece(Vector3 position, GameObject piece, bool isVirtual)
     {
         pieces[position] = pieces[piece.transform.position];
         pieces.Remove(piece.transform.position);
+        if (!isVirtual) {
+            piece.transform.position = position;
+        }
     }
 
     public GameObject CheckCase(Vector3 position)
@@ -94,12 +97,14 @@ public class Board
         return false;
     }
 
-    public List<Movement> GetAllMovements()
+    public List<Movement> GetAllMovements(Color side)
     {
         List<Movement> movements = new List<Movement>();
         foreach (GameObject piece in pieces.Values)
         {
-            movements = GetMovementsByPieceType(piece);
+            if (side == piece.GetComponent<Piece>().side) {
+                movements = GetMovementsByPieceType(piece);
+            }
         }
         return movements;
     }
@@ -156,7 +161,7 @@ public class Board
                 {
                     board.pieces.Remove(movements[i].position);
                 }
-                board.MovePiece(movements[i].position, piece);
+                board.MovePiece(movements[i].position, piece, true);
                 if (board.Check())
                 {
                     movements.RemoveAt(i);
@@ -236,7 +241,7 @@ public class Board
             {
                 boardCopy.pieces.Remove(position + pos);
             }
-            boardCopy.MovePiece(position + pos, piece);
+            boardCopy.MovePiece(position + pos, piece, true);
             if (moveType != MoveType.Blocked && (depth >= 2 || !boardCopy.CheckAttack(position + pos, piece.GetComponent<Piece>().side)))
             {
                 movements.Add(new Movement(position + pos, piece, moveType));
@@ -327,7 +332,7 @@ public class Board
                 {
                     movements.Add(new Movement(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece, moveType));
                 }
-                else if (CheckCastling(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece) && !RemoveCheckCastling(piece))
+                else if (depth < 2 && CheckCastling(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece) && !RemoveCheckCastling(piece))
                 {
                     movements.Add(new Movement(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece, MoveType.Castling));
                 }

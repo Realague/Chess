@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3990979193639729297}
   - component: {fileID: 8265846124403066898}
   m_Layer: 0
-  m_Name: highlightedMoveKill
+  m_Name: highlightedAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5427269372907503654}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9249ae32873c5b442b565d4377d8956f, type: 3}
+  m_Script: {fileID: 11500000, guid: f831795924fed524d9c2b54ea88498ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!65 &8265846124403066898

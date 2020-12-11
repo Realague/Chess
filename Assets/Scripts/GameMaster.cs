@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -14,9 +13,9 @@ public class GameMaster : MonoBehaviour
     [SerializeField]
     private GameObject highlightedCastling;
 
-    public static GameObject queenDark;
+    public GameObject queenDark;
 
-    public static GameObject queenLight;
+    public GameObject queenLight;
 
     public static GameMaster instance = null;
 
@@ -83,15 +82,13 @@ public class GameMaster : MonoBehaviour
         {
             if (movement.moveType == MoveType.Attack)
             {
-                moves.Add(Instantiate(highlightedAttack, movement.position, new Quaternion(45, 0, 0, 45)));
-            }
-            else if (movement.moveType == MoveType.Move || movement.moveType == MoveType.MovePawn)
+                moves.Add(CreateMove(highlightedAttack, movement));
+            } else if (movement.moveType == MoveType.Move || movement.moveType == MoveType.MovePawn)
             {
-                moves.Add(Instantiate(highlightedMove, movement.position, new Quaternion(45, 0, 0, 45)));
-            }
-            else if (movement.moveType == MoveType.Castling)
+                moves.Add(CreateMove(highlightedMove, movement));
+            } else if (movement.moveType == MoveType.Castling)
             {
-                moves.Add(Instantiate(highlightedCastling, movement.position, new Quaternion(45, 0, 0, 45)));
+                moves.Add(CreateMove(highlightedCastling, movement));
             }
         }
     }
@@ -103,11 +100,6 @@ public class GameMaster : MonoBehaviour
             Destroy(move);
         }
         selectedPiece = null;
-    }
-
-    public void Move(Vector3 position)
-    {
-
     }
 
     public void EndTurn()
@@ -127,5 +119,12 @@ public class GameMaster : MonoBehaviour
     public static GameObject Instantiate(GameObject gameObject, Vector3 position, Quaternion quaternion)
     {
         return Object.Instantiate(gameObject, position, quaternion);
+    }
+
+    private GameObject CreateMove(GameObject prefab, Movement movement) {
+        GameObject move = Instantiate(prefab, movement.position, new Quaternion(45, 0, 0, 45));
+        move.GetComponent<MovementScript>().movement = movement;
+        move.transform.parent = movement.piece.transform;
+        return move;
     }
 }
