@@ -3,39 +3,85 @@ using System.Collections.Generic;
 
 public class MinMax
 {
-    private static int depth = 6;
 
     public Board board;
 
-    public Color color;
+    private static int depth = 1;
 
     public Random rand = new Random();
 
-    public MinMax(Board board, Color color)
+    public MinMax(Board board)
     {
-        this.color = color;
-        this.board = board;
+        this.board = new Board(board);
     }
 
-    public Movement MinMaxAlgorithm()
+    public MinMax(MinMax minMax)
     {
-        List<Movement> movements = board.GetAllMovements(GameMaster.instance.turn);
-        Movement selectedMove = null;
-        int score = 0;
-        int tmpScore = 0;
+        this.board = new Board(minMax.board);
+    }
 
+    public static Movement PerformMinMax(Board board)
+    {
+        MinMax minMax = new MinMax(board);
+        List<Movement> movements = minMax.board.GetAllMovements(GameMaster.instance.turn);
+        if (movements.Count == 0)
+        {
+            return null;
+        }
+        int max = int.MinValue;
+        int maxTmp;
+        Movement movementToDo = null; 
         foreach (Movement movement in movements)
         {
-            if ((tmpScore = CalculateScore(movement)) > score)
+            MinMax minMaxtmp = new MinMax(minMax);
+            movement.DoMovement(minMaxtmp.board, true);
+            maxTmp = MinMaxNodes(minMaxtmp, depth - 1, false);
+            if (maxTmp > max)
             {
-                score = tmpScore;
-                selectedMove = movement;
+                max = maxTmp;
+                movementToDo = movement;
             }
         }
-        return selectedMove;
+        return movementToDo;
     }
 
-    private int CalculateScore(Movement movement)
+    public static int MinMaxNodes(MinMax minMax, int depth, bool isMax)
+    {
+        if (depth == 0)
+        {
+            return minMax.CalculateScore();
+        }
+        
+        List<Movement> movements = minMax.board.GetAllMovements(GameMaster.instance.turn);
+        if (movements.Count == 0)
+        {
+            return isMax ? int.MinValue : int.MaxValue;
+        }
+        else if (isMax)
+        {
+            int max = int.MinValue;
+            foreach (Movement movement in movements)
+            {
+                MinMax minMaxtmp = new MinMax(minMax);
+                movement.DoMovement(minMaxtmp.board, true);
+                max = Math.Max(max, MinMaxNodes(minMaxtmp, depth - 1, false));
+            }
+            return max;
+        }
+        else
+        {
+            int min = int.MaxValue;
+            foreach (Movement movement in movements)
+            {
+                MinMax minMaxtmp = new MinMax(minMax);
+                movement.DoMovement(minMaxtmp.board, true);
+                min = Math.Min(min, MinMaxNodes(minMaxtmp, depth - 1, true));
+            }
+            return min;
+        }
+    }
+
+    private int CalculateScore()
     {
         return rand.Next();
     }

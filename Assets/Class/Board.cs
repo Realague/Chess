@@ -103,7 +103,7 @@ public class Board
         foreach (GameObject piece in pieces.Values)
         {
             if (side == piece.GetComponent<Piece>().side) {
-                movements = GetMovementsByPieceType(piece);
+                movements.AddRange(GetMovementsByPieceType(piece));
             }
         }
         return movements;

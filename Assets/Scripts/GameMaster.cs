@@ -19,8 +19,6 @@ public class GameMaster : MonoBehaviour
 
     public static GameMaster instance = null;
 
-    private bool isPlayerTurn = true;
-
     public Color turn = Color.Light;
 
     public GameObject selectedPiece;
@@ -35,12 +33,11 @@ public class GameMaster : MonoBehaviour
 
     private List<GameObject> moves;
 
-    private MinMax minMax;
-
-
     void Awake()
     {
-        minMax = new MinMax(board, Color.Dark);
+        board = new Board(lightPieces, darkPieces);
+        selectedPiece = null;
+        moves = new List<GameObject>();
         if (instance == null)
         {
             instance = this;
@@ -54,9 +51,7 @@ public class GameMaster : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        board = new Board(lightPieces, darkPieces);
-        selectedPiece = null;
-        moves = new List<GameObject>();
+
     }
 
     // Update is called once per frame
@@ -64,8 +59,8 @@ public class GameMaster : MonoBehaviour
     {
         if (turn == Color.Dark)
         {
-            minMax.board = board;
-            Movement movement = minMax.MinMaxAlgorithm();
+            Movement movement = MinMax.PerformMinMax(board);
+            selectedPiece = movement.piece;
             movement.DoMovement(board, false);
         }
     }
@@ -105,7 +100,6 @@ public class GameMaster : MonoBehaviour
     public void EndTurn()
     {
         selectedPiece.GetComponent<Piece>().isFirstMove = false;
-        selectedPiece = null;
         turn = turn == Color.Light ? Color.Dark : Color.Light;
         DeleteMoves();
     }
