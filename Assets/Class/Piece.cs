@@ -21,7 +21,8 @@ public class Piece : MonoBehaviour
             }
             else
             {
-                var movements = GameMaster.instance.board.GetMovementsByPieceType(this.gameObject);
+                Piece piece = this.GetComponent<Piece>();
+                var movements = GameMaster.instance.board.GetMovementsByPieceType(GameMaster.instance.board.pieces[(int)this.transform.position.x, (int)this.transform.position.z]);
                 if (movements.Count != 0)
                 {
                     GameMaster.instance.CreateMoves(movements, this.gameObject);

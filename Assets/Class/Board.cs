@@ -3,73 +3,86 @@ using UnityEngine;
 
 public class Board
 {
-    public Dictionary<Vector3, GameObject> pieces;
+    public VirtualPiece[,] pieces = new VirtualPiece[8, 8];
 
     private static int depth = 0;
 
-    public Board(List<GameObject> lightPieces, List<GameObject> darkPieces)
-    {
-        pieces = new Dictionary<Vector3, GameObject>();
+    public Stack<Movement> previousMove = new Stack<Movement>();
 
-        int i = 0;
-        foreach (GameObject piece in darkPieces)
-        {
-            pieces.Add(new Vector3(i % 8, 0, i / 8), piece);
-            i++;
+    public Board(Dictionary<Vector2, GameObject> piecesObject)
+    {
+        for (int i = 0; i != 8; i++) {
+            for (int j = 0; j != 8; j++) {
+                pieces[i, j] = null;
+            }
         }
 
-        i = 0;
-        foreach (GameObject piece in lightPieces)
-        {
-            pieces.Add(new Vector3(i % 8, 0, 7 - i / 8), piece);
-            i++;
+        foreach (KeyValuePair<Vector2, GameObject> entry in piecesObject) {
+            pieces[(int)entry.Key.x, (int)entry.Key.y] = new VirtualPiece(entry.Value.GetComponent<Piece>(), entry.Key);
         }
     }
 
     public Board(Board board)
     {
-        pieces = new Dictionary<Vector3, GameObject>(board.pieces);
-    }
-
-    public void AddPiece(GameObject piece)
-    {
-        pieces.Add(piece.transform.position, piece);
-    }
-
-    public void RemovePiece(Vector3 position)
-    {
-        pieces.Remove(position);
-    }
-
-    public void MovePiece(Vector3 position, GameObject piece, bool isVirtual)
-    {
-        pieces[position] = pieces[piece.transform.position];
-        pieces.Remove(piece.transform.position);
-        if (!isVirtual) {
-            piece.transform.position = position;
+        pieces = new VirtualPiece[8, 8];
+        for (int i = 0; i != 8; i++) {
+            for (int j = 0; j != 8; j++) {
+                if (board.pieces[i, j] == null) {
+                    pieces[i, j] = null;
+                } else {
+                    pieces[i, j] = new VirtualPiece(board.pieces[i, j]);
+                }
+            }
         }
     }
 
-    public GameObject CheckCase(Vector3 position)
+    public void AddPiece(Piece piece, Vector2 position)
     {
-        if (pieces.ContainsKey(position))
-        {
-            return pieces[position];
-        }
-        return null;
+        pieces[(int)position.x, (int)position.y] = new VirtualPiece(piece, position);
+    }
+
+    public void AddPiece(VirtualPiece piece) {
+        //Debug.Log("piece: " + piece.position);
+        pieces[(int)piece.position.x, (int)piece.position.y] = piece;
+    }
+
+    public void RemovePiece(Vector2 position)
+    {
+        pieces[(int)position.x, (int)position.y] = null;
+    }
+
+    public void MovePiece(Vector2 position, Vector2 oldPosition, VirtualPiece pieceA) {
+        pieces[(int)oldPosition.x, (int)oldPosition.y] = null;
+        pieces[(int)position.x, (int)position.y] = new VirtualPiece(pieceA);
+        pieces[(int)position.x, (int)position.y].position = position;
+    }
+
+    public void MovePiece(Vector2 position, Vector2 oldPosition) {
+        //Debug.Log(position);
+        //Debug.Log(oldPosition);
+        VirtualPiece piece = pieces[(int)oldPosition.x, (int)oldPosition.y];
+        //Debug.Log(piece);
+        pieces[(int)position.x, (int)position.y] = new VirtualPiece(piece);
+        pieces[(int)oldPosition.x, (int)oldPosition.y] = null;
+        pieces[(int)position.x, (int)position.y].position = position;
+    }
+
+    public VirtualPiece CheckCase(Vector2 position)
+    {
+        return pieces[(int)position.x, (int)position.y];
     }
 
     //Determine the move type
-    public MoveType CheckMove(Vector3 position, GameObject piece)
+    public MoveType CheckMove(Vector2 position, VirtualPiece piece)
     {
-        if (position.x >= 0 && position.x < 8 && position.z >= 0 && position.z < 8)
+        if (position.x >= 0 && position.x < 8 && position.y >= 0 && position.y < 8)
         {
-            GameObject result = CheckCase(position);
+            VirtualPiece result = CheckCase(position);
             if (result == null)
             {
                 return MoveType.Move;
             }
-            else if (result.GetComponent<Piece>().side != piece.GetComponent<Piece>().side)
+            else if (result.side != piece.side)
             {
                 return MoveType.Attack;
             }
@@ -79,18 +92,15 @@ public class Board
     }
 
     //Check if castling is possible
-    public bool CheckCastling(Vector3 position, GameObject rook)
+    public bool CheckCastling(Vector2 position, VirtualPiece rook)
     {
-        GameObject king = CheckCase(position);
+        VirtualPiece king = CheckCase(position);
         if (king == null)
         {
             return false;
         }
 
-        Piece kingPiece = king.GetComponent<Piece>();
-        Piece rookPiece = rook.GetComponent<Piece>();
-
-        if (rookPiece.type == PieceType.Rook && kingPiece.type == PieceType.King && kingPiece.side == rookPiece.side && kingPiece.isFirstMove && rookPiece.isFirstMove)
+        if (rook.type == PieceType.Rook && king.type == PieceType.King && king.side == rook.side && king.isFirstMove && rook.isFirstMove)
         {
             return true;
         }
@@ -100,38 +110,40 @@ public class Board
     public List<Movement> GetAllMovements(Color side)
     {
         List<Movement> movements = new List<Movement>();
-        foreach (GameObject piece in pieces.Values)
-        {
-            if (side == piece.GetComponent<Piece>().side) {
-                movements.AddRange(GetMovementsByPieceType(piece));
+        for (int i = 0; i != 8; i++) {
+            for (int j = 0; j != 8; j++) {
+                if (pieces[i, j] != null && side == pieces[i, j].side) {
+                    movements.AddRange(GetMovementsByPieceType(pieces[i, j]));
+                }
             }
         }
+        
         return movements;
     }
 
-    public List<Movement> GetMovementsByPieceType(GameObject piece)
+    public List<Movement> GetMovementsByPieceType(VirtualPiece piece)
     {
         depth++;
         List<Movement> movements = new List<Movement>();
-        switch (piece.GetComponent<Piece>().type)
+        switch (piece.type)
         {
             case PieceType.Bishop:
-                movements = BishopMovement(piece.transform.position, piece);
+                movements = BishopMovement(piece.position, piece);
                 break;
             case PieceType.King:
-                movements = KingMovement(piece.transform.position, piece);
+                movements = KingMovement(piece.position, piece);
                 break;
             case PieceType.Pawn:
-                movements = PawnMovement(piece.transform.position, piece);
+                movements = PawnMovement(piece.position, piece);
                 break;
             case PieceType.Knight:
-                movements = KnightMovement(piece.transform.position, piece);
+                movements = KnightMovement(piece.position, piece);
                 break;
             case PieceType.Queen:
-                movements = QueenMovement(piece.transform.position, piece);
+                movements = QueenMovement(piece.position, piece);
                 break;
             case PieceType.Rook:
-                movements = RookMovement(piece.transform.position, piece);
+                movements = RookMovement(piece.position, piece);
                 break;
             default:
                 break;
@@ -139,15 +151,15 @@ public class Board
 
         if (depth < 2)
         {
-            movements = RemoveCheck(piece, movements);
+           movements = RemoveCheck(piece, movements);
         }
         depth--;
         return movements;
     }
 
-    public List<Movement> RemoveCheck(GameObject piece, List<Movement> movements)
+    public List<Movement> RemoveCheck(VirtualPiece piece, List<Movement> movements)
     {
-        if (piece.GetComponent<Piece>().type == PieceType.King)
+        if (piece.type == PieceType.King)
         {
             return movements;
         }
@@ -156,33 +168,32 @@ public class Board
         {
             if (movements[i].moveType != MoveType.Castling)
             {
-                Board board = new Board(this);
+                previousMove.Push(movements[i]);
                 if (movements[i].moveType == MoveType.Attack)
                 {
-                    board.pieces.Remove(movements[i].position);
+                    RemovePiece(movements[i].position);
                 }
-                board.MovePiece(movements[i].position, piece, true);
-                if (board.Check())
+                MovePiece(movements[i].position, piece.position);
+                if (Check())
                 {
                     movements.RemoveAt(i);
                     i--;
                 }
+                UndoMove();
             }
         }
         return movements;
     }
 
-    public bool CheckAttack(Vector3 position, Color side)
+    public bool CheckAttack(Vector2 position, Color side)
     {
-        foreach (GameObject piece in pieces.Values)
-        {
-            if (piece != null && piece.GetComponent<Piece>().side != side)
-            {
-                foreach (Movement movement in GetMovementsByPieceType(piece))
-                {
-                    if (movement.position == position && movement.moveType != MoveType.MovePawn)
-                    {
-                        return true;
+        for (int i = 0; i != 8; i++) {
+            for (int j = 0; j != 8; j++) {
+                if (pieces[i, j] != null && side != pieces[i, j].side) {
+                    foreach (Movement movement in GetMovementsByPieceType(pieces[i, j])) {
+                        if (movement.position == position && movement.moveType != MoveType.MovePawn) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -195,18 +206,17 @@ public class Board
     {
         Color side = GameMaster.instance.turn;
 
-        foreach (GameObject piece in pieces.Values)
-        {
-            Piece pieceInfo = piece.GetComponent<Piece>();
-            if (pieceInfo.side == side && pieceInfo.type == PieceType.King)
-            {
-                return CheckAttack(piece.transform.position, side);
+        for (int i = 0; i != 8; i++) {
+            for (int j = 0; j != 8; j++) {
+                if (pieces[i, j] != null && side == pieces[i, j].side && pieces[i, j].type == PieceType.King) {
+                    return CheckAttack(pieces[i, j].position, side);
+                }
             }
         }
         return true;
     }
 
-    public List<Movement> BishopMovement(Vector3 position, GameObject piece)
+    public List<Movement> BishopMovement(Vector2 position, VirtualPiece piece)
     {
         Vector2[] vectors = new Vector2[] { new Vector2(1, 1), new Vector2(-1, 1), new Vector2(1, -1), new Vector2(-1, -1) };
         List<Movement> movements = new List<Movement>();
@@ -216,100 +226,102 @@ public class Board
             MoveType moveType = MoveType.Move;
             for (int i = 1; moveType == MoveType.Move; i++)
             {
-                moveType = CheckMove(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece);
+                Vector2 newPosition = position + new Vector2(i * vector2.x, i * vector2.y);
+                moveType = CheckMove(newPosition, piece);
                 if (moveType != MoveType.Blocked)
                 {
-                    movements.Add(new Movement(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece, moveType));
+                    movements.Add(new Movement(newPosition, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(newPosition) : null));
                 }
             }
         }
         return movements;
     }
 
-    public List<Movement> KingMovement(Vector3 position, GameObject piece)
+    public List<Movement> KingMovement(Vector2 position, VirtualPiece piece)
     {
-        Vector3[] positions = new Vector3[] { new Vector3(1, 0, 1), new Vector3(-1, 0, 1), new Vector3(1, 0, -1), new Vector3(-1, 0, -1), new Vector3(1, 0, 0), new Vector3(-1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 0, -1) };
+        Vector2[] positions = new Vector2[] { new Vector2(1, 1), new Vector2(-1, 1), new Vector2(1, -1), new Vector2(-1, -1), new Vector2(1, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(0, -1) };
 
         List<Movement> movements = new List<Movement>();
         MoveType moveType = MoveType.Move;
 
-        foreach (Vector3 pos in positions)
+        foreach (Vector2 pos in positions)
         {
             moveType = CheckMove(position + pos, piece);
-            Board boardCopy = new Board(this);
-            if (moveType == MoveType.Attack)
-            {
-                boardCopy.pieces.Remove(position + pos);
-            }
-            boardCopy.MovePiece(position + pos, piece, true);
-            if (moveType != MoveType.Blocked && (depth >= 2 || !boardCopy.CheckAttack(position + pos, piece.GetComponent<Piece>().side)))
-            {
-                movements.Add(new Movement(position + pos, piece, moveType));
+            if (moveType != MoveType.Blocked) {
+                previousMove.Push(new Movement(position + pos, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
+                if (moveType == MoveType.Attack) {
+                    RemovePiece(position + pos);
+                }
+                MovePiece(position + pos, piece.position);
+                if (depth >= 2 || !CheckAttack(position + pos, piece.side)) {
+                    movements.Add(new Movement(position + pos, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
+                }
+                UndoMove();
             }
         }
 
         return movements;
     }
 
-    public List<Movement> KnightMovement(Vector3 position, GameObject piece)
+    public List<Movement> KnightMovement(Vector2 position, VirtualPiece piece)
     {
-        Vector3[] positions = new Vector3[] { new Vector3(2, 0, 1), new Vector3(2, 0, -1), new Vector3(-2, 0, -1), new Vector3(-2, 0, 1), new Vector3(-1, 0, -2), new Vector3(1, 0, 2), new Vector3(1, 0, -2), new Vector3(-1, 0, 2) };
+        Vector2[] positions = new Vector2[] { new Vector2(2, 1), new Vector2(2, -1), new Vector2(-2, -1), new Vector2(-2, 1), new Vector2(-1, -2), new Vector2(1, 2), new Vector2(1, -2), new Vector2(-1, 2) };
         List<Movement> movements = new List<Movement>();
         MoveType moveType = MoveType.Move;
 
-        foreach (Vector3 pos in positions)
+        foreach (Vector2 pos in positions)
         {
             moveType = CheckMove(position + pos, piece);
             if (moveType != MoveType.Blocked)
             {
-                movements.Add(new Movement(position + pos, piece, moveType));
+                movements.Add(new Movement(position + pos, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
             }
         }
 
         return movements;
     }
 
-    public List<Movement> PawnMovement(Vector3 position, GameObject piece)
+    public List<Movement> PawnMovement(Vector2 position, VirtualPiece piece)
     {
         List<Movement> movements = new List<Movement>();
         MoveType moveType = MoveType.Move;
         int multiplier = 1;
 
-        if (piece.GetComponent<Piece>().side == Color.Light)
+        if (piece.side == Color.Light)
         {
             multiplier = -1;
         }
 
-        moveType = CheckMove(position + new Vector3(0, 0, 1 * multiplier), piece);
+        moveType = CheckMove(position + new Vector2(0, 1 * multiplier), piece);
         if (moveType == MoveType.Move)
         {
-            movements.Add(new Movement(position + new Vector3(0, 0, 1 * multiplier), piece, MoveType.MovePawn));
-            if (piece.GetComponent<Piece>().isFirstMove)
+            movements.Add(new Movement(position + new Vector2(0, 1 * multiplier), new VirtualPiece(piece), MoveType.MovePawn, null));
+            if (piece.isFirstMove)
             {
-                moveType = CheckMove(position + new Vector3(0, 0, 2 * multiplier), piece);
+                moveType = CheckMove(position + new Vector2(0, 2 * multiplier), piece);
                 if (moveType != MoveType.Blocked && moveType != MoveType.Attack)
                 {
-                    movements.Add(new Movement(position + new Vector3(0, 0, 2 * multiplier), piece, MoveType.MovePawn));
+                    movements.Add(new Movement(position + new Vector2(0, 2 * multiplier), new VirtualPiece(piece), MoveType.MovePawn, null));
                 }
             }
         }
 
-        moveType = CheckMove(position + new Vector3(1, 0, 1 * multiplier), piece);
+        moveType = CheckMove(position + new Vector2(1, 1 * multiplier), piece);
         if (moveType == MoveType.Attack)
         {
-            movements.Add(new Movement(position + new Vector3(1, 0, 1 * multiplier), piece, moveType));
+            movements.Add(new Movement(position + new Vector2(1, 1 * multiplier), new VirtualPiece(piece), moveType, CheckCase(position + new Vector2(1, 1 * multiplier))));
         }
 
-        moveType = CheckMove(position + new Vector3(-1, 0, 1 * multiplier), piece);
+        moveType = CheckMove(position + new Vector2(-1, 1 * multiplier), piece);
         if (moveType == MoveType.Attack)
         {
-            movements.Add(new Movement(position + new Vector3(-1, 0, 1 * multiplier), piece, moveType));
+            movements.Add(new Movement(position + new Vector2(-1, 1 * multiplier), new VirtualPiece(piece), moveType, CheckCase(position + new Vector2(-1, 1 * multiplier))));
         }
 
         return movements;
     }
 
-    public List<Movement> QueenMovement(Vector3 position, GameObject piece)
+    public List<Movement> QueenMovement(Vector2 position, VirtualPiece piece)
     {
         List<Movement> movements = new List<Movement>();
         movements = RookMovement(position, piece);
@@ -317,7 +329,7 @@ public class Board
         return movements;
     }
 
-    public List<Movement> RookMovement(Vector3 position, GameObject piece)
+    public List<Movement> RookMovement(Vector2 position, VirtualPiece piece)
     {
         Vector2[] vectors = new Vector2[] { new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(1, 0) };
         List<Movement> movements = new List<Movement>();
@@ -327,39 +339,60 @@ public class Board
             MoveType moveType = MoveType.Move;
             for (int i = 1; moveType == MoveType.Move; i++)
             {
-                moveType = CheckMove(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece);
-                if (moveType != MoveType.Blocked)
-                {
-                    movements.Add(new Movement(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece, moveType));
-                }
-                else if (depth < 2 && CheckCastling(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece) && !RemoveCheckCastling(piece))
-                {
-                    movements.Add(new Movement(position + new Vector3(i * vector2.x, 0, i * vector2.y), piece, MoveType.Castling));
+                Vector2 newPosition = position + new Vector2(i * vector2.x, i * vector2.y);
+                if (newPosition.x >= 0 && newPosition.x < 8 && newPosition.y >= 0 && newPosition.y < 8) {
+                    moveType = CheckMove(newPosition, piece);
+                    if (moveType != MoveType.Blocked) {
+                        movements.Add(new Movement(newPosition, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(newPosition) : null));
+                    } else if (depth < 2 && CheckCastling(newPosition, piece) && !RemoveCheckCastling(piece)) {
+                        movements.Add(new Movement(newPosition, new VirtualPiece(piece), MoveType.Castling, CheckCase(newPosition)));
+                    }
+                } else {
+                    moveType = MoveType.Blocked;
                 }
             }
         }
         return movements;
     }
 
-    public bool RemoveCheckCastling(GameObject piece)
+    public bool RemoveCheckCastling(VirtualPiece piece)
     {
-        float z = piece.transform.position.z;
-        if (piece.transform.position.x == 0)
+        float y = piece.position.y;
+        if (piece.position.x == 0)
         {
-            if (CheckAttack(new Vector3(1, 0, z), piece.GetComponent<Piece>().side) || CheckAttack(new Vector3(2, 0, z), piece.GetComponent<Piece>().side) ||
-                (z == 0 && CheckAttack(new Vector3(3, 0, z), piece.GetComponent<Piece>().side)))
+            if (CheckAttack(new Vector2(1, y), piece.side) || CheckAttack(new Vector2(2, y), piece.side) ||
+                (y == 0 && CheckAttack(new Vector2(3, y), piece.side)))
             {
                 return true;
             }
-        } else if (piece.transform.position.x == 7)
+        } else if (piece.position.x == 7)
         {
-            if (CheckAttack(new Vector3(5, 0, z), piece.GetComponent<Piece>().side) || CheckAttack(new Vector3(6, 0, z), piece.GetComponent<Piece>().side) ||
-                (z == 7 && CheckAttack(new Vector3(4, 0, z), piece.GetComponent<Piece>().side)))
+            if (CheckAttack(new Vector2(5, y), piece.side) || CheckAttack(new Vector2(6, y), piece.side) ||
+                (y == 7 && CheckAttack(new Vector2(4, y), piece.side)))
             {
                 return true;
             }
         }
         return false;
+    }
+
+    public void UndoMove() {
+        Movement move = previousMove.Pop();
+        if (move.moveType != MoveType.Castling && move.moveType != MoveType.Attack) {
+             MovePiece(move.piece.position, move.position);
+        } else if (move.moveType == MoveType.Attack) {
+            MovePiece(move.piece.position, move.position);
+            AddPiece(new VirtualPiece(move.pieceAttacked));
+        } else if (move.moveType == MoveType.Castling) {
+            float y = move.piece.position.y;
+            if (move.piece.position.x == 0) {
+                MovePiece(move.position, new Vector2(1, y));
+                MovePiece(move.piece.position, new Vector2(2, y));
+            } else if (move.piece.position.x == 7) {
+                MovePiece(move.position, new Vector2(6, y));
+                MovePiece(move.piece.position, new Vector2(5, y));
+            }
+        }
     }
 
 }

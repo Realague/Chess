@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -33,9 +34,25 @@ public class GameMaster : MonoBehaviour
 
     private List<GameObject> moves;
 
+    public Dictionary<Vector2, GameObject> piecesObject;
+
     void Awake()
     {
-        board = new Board(lightPieces, darkPieces);
+        piecesObject = new Dictionary<Vector2, GameObject>();
+
+        int i = 0;
+        foreach (GameObject piece in darkPieces) {
+            piecesObject.Add(new Vector2(i % 8, i / 8), piece);
+            i++;
+        }
+
+        i = 0;
+        foreach (GameObject piece in lightPieces) {
+            piecesObject.Add(new Vector2(i % 8, 7 - i / 8), piece);
+            i++;
+        }
+
+        board = new Board(piecesObject);
         selectedPiece = null;
         moves = new List<GameObject>();
         if (instance == null)
@@ -48,19 +65,17 @@ public class GameMaster : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
         if (turn == Color.Dark)
         {
+           Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             Movement movement = MinMax.PerformMinMax(board);
-            selectedPiece = movement.piece;
+            stopwatch.Stop();
+            UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds);
+            selectedPiece = piecesObject[new Vector2(movement.piece.position.x, movement.piece.position.y)];
             movement.DoMovement(board, false);
         }
     }
@@ -88,6 +103,14 @@ public class GameMaster : MonoBehaviour
         }
     }
 
+    public void Move(Vector2 position, Vector2 newPosition) {
+        //UnityEngine.Debug.Log(position);
+        //UnityEngine.Debug.Log(newPosition);
+        piecesObject.Add(newPosition, piecesObject[position]);
+        piecesObject.Remove(position);
+        piecesObject[newPosition].transform.position = Utils.Vector2ToVector3(newPosition);
+    }
+
     public void DeleteMoves()
     {
         foreach (GameObject move in moves)
@@ -100,14 +123,16 @@ public class GameMaster : MonoBehaviour
     public void EndTurn()
     {
         selectedPiece.GetComponent<Piece>().isFirstMove = false;
+        board.pieces[(int)selectedPiece.transform.position.x, (int)selectedPiece.transform.position.z].isFirstMove = false;
         turn = turn == Color.Light ? Color.Dark : Color.Light;
         DeleteMoves();
     }
 
-    public void DeletePiece(Vector3 position)
+    public void DeletePiece(Vector2 position)
     {
-        Destroy(board.CheckCase(position));
+        Destroy(piecesObject[position]);
         board.RemovePiece(position);
+        piecesObject.Remove(position);
     }
 
     public static GameObject Instantiate(GameObject gameObject, Vector3 position, Quaternion quaternion)
@@ -116,9 +141,9 @@ public class GameMaster : MonoBehaviour
     }
 
     private GameObject CreateMove(GameObject prefab, Movement movement) {
-        GameObject move = Instantiate(prefab, movement.position, new Quaternion(45, 0, 0, 45));
+        GameObject move = Instantiate(prefab, Utils.Vector2ToVector3(movement.position), new Quaternion(45, 0, 0, 45));
         move.GetComponent<MovementScript>().movement = movement;
-        move.transform.parent = movement.piece.transform;
+        //move.transform.parent = piecesObject[new Vector2(movement.piece.position.x, movement.piece.position.y)].transform;
         return move;
     }
 }

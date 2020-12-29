@@ -501,6 +501,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 460194002}
     m_Modifications:
+    - target: {fileID: -4547018422861881438, guid: f1fc282519e5c4a4daaa864f9c3d446f,
+        type: 3}
+      propertyPath: type
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1971375302472462, guid: f1fc282519e5c4a4daaa864f9c3d446f, type: 3}
       propertyPath: m_Name
       value: RookLightLeft
@@ -1479,6 +1484,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1493660442}
     m_Modifications:
+    - target: {fileID: -1430466656300692414, guid: 309659d4eb727d74d91c4875a85edc00,
+        type: 3}
+      propertyPath: type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1810274083847610, guid: 309659d4eb727d74d91c4875a85edc00, type: 3}
       propertyPath: m_Name
       value: KingDark
@@ -2260,6 +2270,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 460194002}
     m_Modifications:
+    - target: {fileID: -4547018422861881438, guid: f1fc282519e5c4a4daaa864f9c3d446f,
+        type: 3}
+      propertyPath: type
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1971375302472462, guid: f1fc282519e5c4a4daaa864f9c3d446f, type: 3}
       propertyPath: m_Name
       value: RookLightRight
@@ -2801,6 +2816,11 @@ PrefabInstance:
     - target: {fileID: 4213819079365966, guid: 664a4dc6e997f5f47a9233db911328ac, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6865527222143423342, guid: 664a4dc6e997f5f47a9233db911328ac,
+        type: 3}
+      propertyPath: type
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 664a4dc6e997f5f47a9233db911328ac, type: 3}

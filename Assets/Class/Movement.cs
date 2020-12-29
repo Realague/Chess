@@ -2,17 +2,22 @@
 
 public class Movement
 {
-    public Vector3 position;
+    public Vector2 position;
 
-    public GameObject piece;
+    public VirtualPiece piece;
 
     public MoveType moveType;
 
-    public Movement(Vector3 position, GameObject piece, MoveType moveType)
+    public VirtualPiece pieceAttacked;
+
+    public VirtualPiece queen = null;
+
+    public Movement(Vector2 position, VirtualPiece piece, MoveType moveType, VirtualPiece pieceAttacked)
     {
         this.position = position;
         this.piece = piece;
         this.moveType = moveType;
+        this.pieceAttacked = pieceAttacked;
     }
 
     public void DoMovement(Board board, bool isVirtual)
@@ -20,21 +25,28 @@ public class Movement
         switch (moveType)
         {
             case MoveType.Move:
-                board.MovePiece(position, piece, isVirtual);
+                if (!isVirtual) {
+                    GameMaster.instance.Move(piece.position, position);
+                }
+                board.MovePiece(position, piece.position);
                 break;
             case MoveType.MovePawn:
-                board.MovePiece(position, piece, isVirtual);
+                if (!isVirtual) {
+                    GameMaster.instance.Move(piece.position, position);
+                }
+                board.MovePiece(position, piece.position);
                 HandlePawnFinish(position, board, isVirtual);
                 break;
             case MoveType.Attack:
                 if (!isVirtual)
                 {
                     GameMaster.instance.DeletePiece(position);
+                    GameMaster.instance.Move(piece.position, position);
                 } else
                 {
                     board.RemovePiece(position);
                 }
-                board.MovePiece(position, piece, isVirtual);
+                board.MovePiece(position, piece.position);
                 HandlePawnFinish(position, board, isVirtual);
                 break;
             case MoveType.Castling:
@@ -47,45 +59,54 @@ public class Movement
         if (!isVirtual)
         {
             GameMaster.instance.EndTurn();
+        } else {
+            board.previousMove.Push(this);
         }
     }
 
     private void HandleCastling(Board board, bool isVirtual)
     {
-        float z = piece.transform.position.z;
-        if (piece.transform.position.x == 0)
+        float y = piece.position.y;
+        if (piece.position.x == 0)
         {
-            board.MovePiece(new Vector3(2, 0, z), piece, isVirtual);
-            GameObject king = board.CheckCase(position);
-            board.MovePiece(new Vector3(1, 0, z), king, isVirtual);
-        }
-        else if (piece.transform.position.x == 7)
+            VirtualPiece king = board.CheckCase(position);
+            if (!isVirtual) {
+                GameMaster.instance.Move(king.position, new Vector2(1, y));
+                GameMaster.instance.Move(piece.position, new Vector2(2, y));
+            }
+            board.MovePiece(new Vector2(1, y), king.position);
+            board.MovePiece(new Vector2(2, y), piece.position);
+        } else if (piece.position.x == 7)
         {
-            board.MovePiece(new Vector3(5, 0, z), piece, isVirtual);
-            GameObject king = board.CheckCase(position);
-            board.MovePiece(new Vector3(6, 0, z), king, isVirtual);
+            VirtualPiece king = board.CheckCase(position);
+            if (!isVirtual) {
+                GameMaster.instance.Move(king.position, new Vector2(5, y));
+                GameMaster.instance.Move(piece.position, new Vector2(6, y));
+            }
+            board.MovePiece(new Vector2(6, y), king.position);
+            board.MovePiece(new Vector2(5, y), piece.position);
         }
     }
 
-    private void HandlePawnFinish(Vector3 position, Board board,  bool isVirtual)
+    private void HandlePawnFinish(Vector2 position, Board board,  bool isVirtual)
     {
-        if (piece.GetComponent<Piece>().type == PieceType.Pawn) {
-            if (piece.GetComponent<Piece>().side == Color.Light && position.z == 0) {
-                if (isVirtual) {
-                    board.RemovePiece(position);
-                    board.AddPiece(GameMaster.Instantiate(GameMaster.instance.queenLight, new Vector3(-100, -100, -100), new Quaternion(0, 180, 0, 0)));
-                } else {
+        if (piece.type == PieceType.Pawn) {
+            if (piece.side == Color.Light && position.y == 0) {
+                board.RemovePiece(position);
+                if (!isVirtual) {
                     GameMaster.instance.DeletePiece(position);
-                    board.AddPiece(GameMaster.Instantiate(GameMaster.instance.queenLight, position, new Quaternion(0, 180, 0, 0)));
+                    GameMaster.instance.piecesObject.Add(position, GameMaster.Instantiate(GameMaster.instance.queenLight, Utils.Vector2ToVector3(position), new Quaternion(0, 180, 0, 0)));
                 }
-            } else if (piece.GetComponent<Piece>().side == Color.Dark && position.z == 7) {
-                if (isVirtual) {
-                    board.RemovePiece(position);
-                    board.AddPiece(GameMaster.Instantiate(GameMaster.instance.queenDark, new Vector3(-100, -100, -100), new Quaternion(0, 180, 0, 0)));
-                } else {
+                board.AddPiece(new VirtualPiece(PieceType.Queen, Color.Light, position, true));
+                queen = board.pieces[(int)position.x, (int)position.y];
+            } else if (piece.side == Color.Dark && position.y == 7) {
+                board.RemovePiece(position);
+                if (!isVirtual) {
                     GameMaster.instance.DeletePiece(position);
-                    board.AddPiece(GameMaster.Instantiate(GameMaster.instance.queenDark, position, new Quaternion(0, 0, 0, 0)));
+                    GameMaster.instance.piecesObject.Add(position, GameMaster.Instantiate(GameMaster.instance.queenDark, Utils.Vector2ToVector3(position), new Quaternion(0, 0, 0, 0)));
                 }
+                board.AddPiece(new VirtualPiece(PieceType.Queen, Color.Dark, position, true));
+                queen = board.pieces[(int)position.x, (int)position.y];
             }
         }
     }
