@@ -1,10 +1,10 @@
 ﻿
 public enum PieceType
 {
-    Pawn = 1,
-    Bishop = 2,
-    Knight = 3,
-    Rook = 5,
-    Queen = 9,
-    King = 0
+    Pawn = 100,
+    Knight = 320,
+    Bishop = 330,
+    Rook = 500,
+    Queen = 900,
+    King = 20000
 }

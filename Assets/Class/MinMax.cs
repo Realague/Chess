@@ -40,9 +40,7 @@ public class MinMax
         {
             MinMax minMax = new MinMax(board);
             movement.DoMovement(minMax.board, true);
-            thread = new Thread(() => ThreadManager(minMax, depth - 1, false, alpha, beta));
-            thread.Start();
-            //maxTmp = MinMaxNodes(minMax, depth - 1, false, alpha, beta);
+            maxTmp = MinMaxNodes(minMax, depth - 1, false, alpha, beta);
             if (maxTmp > max)
             {
                 max = maxTmp;
@@ -54,10 +52,6 @@ public class MinMax
             }
         }
         return movementToDo;
-    }
-
-    public static void ThreadManager(MinMax minMax, int depth, bool isMax, int alpha, int beta) {
-
     }
 
     public static int MinMaxNodes(MinMax minMax, int depth, bool isMax, int alpha, int beta)
@@ -110,14 +104,8 @@ public class MinMax
         foreach (VirtualPiece piece in minMax.board.pieces) {
             if (piece != null && piece.side == GameMaster.instance.turn) {
                 value += (int)piece.type;
-                if (piece.type == PieceType.Bishop) {
-                    value += 1;
-                }
             } else if (piece != null) {
                 value -= (int)piece.type;
-                if (piece.type == PieceType.Bishop) {
-                    value -= 1;
-                }
             }
         }
         return value;
