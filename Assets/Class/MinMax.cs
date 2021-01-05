@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -8,9 +8,6 @@ public class MinMax
     public Board board;
 
     private static int depth = 5;
-
-    private static Mutex mutex = new Mutex(true, "results");
-
 
     public MinMax(Board board)
     {
@@ -24,15 +21,13 @@ public class MinMax
 
     public static Movement PerformMinMax(Board board)
     {
-        Thread thread;
-
         List<Movement> movements = board.GetAllMovements(GameMaster.instance.turn);
         if (movements.Count == 0)
         {
             return null;
         }
-        int max = int.MinValue;
-        int maxTmp;
+        int bestScore = int.MinValue;
+        int score;
         int alpha = int.MinValue;
         int beta = int.MaxValue;
         Movement movementToDo = null; 
@@ -40,62 +35,47 @@ public class MinMax
         {
             MinMax minMax = new MinMax(board);
             movement.DoMovement(minMax.board, true);
-            maxTmp = MinMaxNodes(minMax, depth - 1, false, alpha, beta);
-            if (maxTmp > max)
+            score = -AlphaBeta(minMax, depth - 1, -1, -alpha, -beta);
+            if (score >= beta)
             {
-                max = maxTmp;
-                movementToDo = movement;
+                return movementToDo;
             }
-            alpha = Math.Max(alpha, max);
-            if (beta <= alpha) {
-                break;
+            if (score > bestScore) {
+                bestScore = score;
+                movementToDo = movement;
+                if (score > alpha) {
+                    alpha = bestScore;
+                }
             }
         }
         return movementToDo;
     }
 
-    public static int MinMaxNodes(MinMax minMax, int depth, bool isMax, int alpha, int beta)
-    {
-        if (depth == 0)
-        {
-            return minMax.CalculateScore(minMax);
+    public static int AlphaBeta(MinMax minMax, int depthLeft, int turn, int alpha, int beta) {
+        if (depthLeft == 0) {
+            return turn * minMax.CalculateScore(minMax);
         }
-        
-        List<Movement> movements = minMax.board.GetAllMovements(isMax ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark);
-        if (movements.Count == 0)
-        {
-            return isMax ? int.MinValue : int.MaxValue;
+
+        List<Movement> movements = minMax.board.GetAllMovements(turn == 1 ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark);
+        if (movements.Count == 0) {
+            return turn * int.MaxValue;
         }
-        else if (isMax)
-        {
-            int max = int.MinValue;
-            foreach (Movement movement in movements)
-            {
-                movement.DoMovement(minMax.board, true);
-                max = Math.Max(max, MinMaxNodes(minMax, depth - 1, false, alpha, beta));
-                alpha = Math.Max(alpha, max);
-                minMax.board.UndoMove();
-                if (beta <= alpha) {
-                    break;
+        int bestScore = int.MinValue;
+        foreach (Movement movement in movements) {
+            movement.DoMovement(minMax.board, true);
+            int score = -AlphaBeta(minMax, depthLeft - 1, -turn, -alpha, -beta);
+            minMax.board.UndoMove();
+            if (score >= beta) {
+                return score;
+            }
+            if (score > bestScore) {
+                bestScore = score;
+                if (score > alpha) {
+                    alpha = bestScore;
                 }
             }
-            return max;
         }
-        else
-        {
-            int min = int.MaxValue;
-            foreach (Movement movement in movements)
-            {
-                movement.DoMovement(minMax.board, true);
-                min = Math.Min(min, MinMaxNodes(minMax, depth - 1, true, alpha, beta));
-                beta = Math.Min(beta, min);
-                minMax.board.UndoMove();
-                if (beta <= alpha) {
-                    break;
-                }
-            }
-            return min;
-        }
+        return bestScore;
     }
 
     private int CalculateScore(MinMax minMax)
@@ -104,8 +84,10 @@ public class MinMax
         foreach (VirtualPiece piece in minMax.board.pieces) {
             if (piece != null && piece.side == GameMaster.instance.turn) {
                 value += (int)piece.type;
+                value += PositionEvaluation.EvaluatePosition(piece.type, piece.side, piece.side == Color.Light ? (int)(piece.position.x + piece.position.y * 8) : (int)(piece.position.x + Math.Abs(piece.position.y - 7) * 8));
             } else if (piece != null) {
                 value -= (int)piece.type;
+                value -= PositionEvaluation.EvaluatePosition(piece.type, piece.side, piece.side == Color.Light ? (int)(piece.position.x + piece.position.y * 8) : (int)(piece.position.x + Math.Abs(piece.position.y - 7) * 8));
             }
         }
         return value;

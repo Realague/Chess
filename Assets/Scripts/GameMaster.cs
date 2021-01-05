@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -70,7 +70,7 @@ public class GameMaster : MonoBehaviour
     {
         if (turn == Color.Dark)
         {
-           Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             Movement movement = MinMax.PerformMinMax(board);
             stopwatch.Stop();
@@ -104,8 +104,6 @@ public class GameMaster : MonoBehaviour
     }
 
     public void Move(Vector2 position, Vector2 newPosition) {
-        //UnityEngine.Debug.Log(position);
-        //UnityEngine.Debug.Log(newPosition);
         piecesObject.Add(newPosition, piecesObject[position]);
         piecesObject.Remove(position);
         piecesObject[newPosition].transform.position = Utils.Vector2ToVector3(newPosition);
