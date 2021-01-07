@@ -1,4 +1,4 @@
-﻿
+
 public class PositionEvaluation {
 
    private static int[] pawn = new int[8 * 8] {
@@ -78,7 +78,7 @@ public class PositionEvaluation {
       -50,-30,-30,-30,-30,-30,-30,-50
     };
 
-    public static int EvaluatePosition(PieceType type, Color color, int position) {
+    public static int EvaluatePosition(PieceType type, int position) {
         int score = 0;
 
         switch (type) {
@@ -93,7 +93,6 @@ public class PositionEvaluation {
                 break;
             case PieceType.Rook:
                 score = rook[position];
-
                 break;
             case PieceType.Queen:
                 score = queen[position];

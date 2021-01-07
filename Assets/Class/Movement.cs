@@ -80,8 +80,8 @@ public class Movement
         {
             VirtualPiece king = board.CheckCase(position);
             if (!isVirtual) {
-                GameMaster.instance.Move(king.position, new Vector2(5, y));
-                GameMaster.instance.Move(piece.position, new Vector2(6, y));
+                GameMaster.instance.Move(king.position, new Vector2(6, y));
+                GameMaster.instance.Move(piece.position, new Vector2(5, y));
             }
             board.MovePiece(new Vector2(6, y), king.position);
             board.MovePiece(new Vector2(5, y), piece.position);

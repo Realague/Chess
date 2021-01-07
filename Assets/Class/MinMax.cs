@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using UnityEngine;
 
 public class MinMax
 {
 
     public Board board;
 
-    private static int depth = 5;
+    public static int depth = 1;
 
     public MinMax(Board board)
     {
@@ -84,10 +84,10 @@ public class MinMax
         foreach (VirtualPiece piece in minMax.board.pieces) {
             if (piece != null && piece.side == GameMaster.instance.turn) {
                 value += (int)piece.type;
-                value += PositionEvaluation.EvaluatePosition(piece.type, piece.side, piece.side == Color.Light ? (int)(piece.position.x + piece.position.y * 8) : (int)(piece.position.x + Math.Abs(piece.position.y - 7) * 8));
+                value += PositionEvaluation.EvaluatePosition(piece.type, piece.side == Color.Light ? (int)(piece.position.x + piece.position.y * 8) : (int)(piece.position.x + Math.Abs(piece.position.y - 7) * 8));
             } else if (piece != null) {
                 value -= (int)piece.type;
-                value -= PositionEvaluation.EvaluatePosition(piece.type, piece.side, piece.side == Color.Light ? (int)(piece.position.x + piece.position.y * 8) : (int)(piece.position.x + Math.Abs(piece.position.y - 7) * 8));
+                value -= PositionEvaluation.EvaluatePosition(piece.type, piece.side == Color.Light ? (int)(piece.position.x + piece.position.y * 8) : (int)(piece.position.x + Math.Abs(piece.position.y - 7) * 8));
             }
         }
         return value;
