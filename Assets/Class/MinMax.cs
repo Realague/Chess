@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,63 +19,73 @@ public class MinMax
         this.board = new Board(minMax.board);
     }
 
-    public static Movement PerformMinMax(Board board)
-    {
-        List<Movement> movements = board.GetAllMovements(GameMaster.instance.turn);
-        if (movements.Count == 0)
-        {
-            return null;
+    public static Movement bestMove = null;
+
+    public static int NegaMax(MinMax minMax, int depthLeft, int turn, int alpha, int beta) {
+        if (depthLeft == 0) {
+            //return minMax.CalculateScore(minMax);
+            return MinMax.QuiescenceSearch(minMax, alpha, beta, turn);
         }
-        int bestScore = int.MinValue;
-        int score;
-        int alpha = int.MinValue;
-        int beta = int.MaxValue;
-        Movement movementToDo = null; 
-        foreach (Movement movement in movements)
-        {
-            MinMax minMax = new MinMax(board);
+
+        int oldAlpha = alpha;
+
+        List<Movement> movements = minMax.board.GetAllMovements(turn == 1 ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark);
+        if (movements.Count == 0) {
+            return turn * int.MaxValue;
+        }
+        Movement bestSoFar = null;
+        foreach (Movement movement in movements) {
             movement.DoMovement(minMax.board, true);
-            score = -AlphaBeta(minMax, depth - 1, -1, -alpha, -beta);
-            if (score >= beta)
-            {
-                return movementToDo;
+            int score = -NegaMax(new MinMax(minMax), depthLeft - 1, -turn, -beta, -alpha);
+            minMax.board.UndoMove();
+            if (score >= beta) {
+                return beta;
             }
-            if (score > bestScore) {
-                bestScore = score;
-                movementToDo = movement;
-                if (score > alpha) {
-                    alpha = bestScore;
+            if (score > alpha) {
+                alpha = score;
+                if (depthLeft == MinMax.depth) {
+                    bestSoFar = movement;
                 }
             }
         }
-        return movementToDo;
+        if (alpha != oldAlpha) {
+            bestMove = bestSoFar;
+        }
+
+        return alpha;
     }
 
-    public static int AlphaBeta(MinMax minMax, int depthLeft, int turn, int alpha, int beta) {
-        if (depthLeft == 0) {
-            return turn * minMax.CalculateScore(minMax);
+    private static int QuiescenceSearch(MinMax minMax, int alpha, int beta, int turn) {
+
+        int score = turn * minMax.CalculateScore(minMax);
+
+        if (score >= beta) {
+            return beta;
+        }
+
+        if (score > alpha) {
+            alpha = score;
         }
 
         List<Movement> movements = minMax.board.GetAllMovements(turn == 1 ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark);
         if (movements.Count == 0) {
             return turn * int.MaxValue;
         }
-        int bestScore = int.MinValue;
         foreach (Movement movement in movements) {
-            movement.DoMovement(minMax.board, true);
-            int score = -AlphaBeta(minMax, depthLeft - 1, -turn, -alpha, -beta);
-            minMax.board.UndoMove();
-            if (score >= beta) {
-                return score;
-            }
-            if (score > bestScore) {
-                bestScore = score;
+            if (movement.moveType == MoveType.Attack) {
+                movement.DoMovement(minMax.board, true);
+                score = -QuiescenceSearch(minMax, -beta, -alpha, -turn);
+                minMax.board.UndoMove();
+                if (score >= beta) {
+                    return beta;
+                }
                 if (score > alpha) {
-                    alpha = bestScore;
+                    alpha = score;
                 }
             }
         }
-        return bestScore;
+
+        return alpha;
     }
 
     private int CalculateScore(MinMax minMax)

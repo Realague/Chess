@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -72,11 +72,14 @@ public class GameMaster : MonoBehaviour
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            Movement movement = MinMax.PerformMinMax(board);
+            MinMax.NegaMax(new MinMax(board), MinMax.depth, 1, int.MinValue + 100, int.MaxValue - 100);
             stopwatch.Stop();
             UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds);
+            Movement movement = MinMax.bestMove;
+            UnityEngine.Debug.Log(movement);
             selectedPiece = piecesObject[new Vector2(movement.piece.position.x, movement.piece.position.y)];
             movement.DoMovement(board, false);
+            MinMax.bestMove = null;
         }
     }
 
