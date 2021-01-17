@@ -36,6 +36,8 @@ public class GameMaster : MonoBehaviour
 
     public Dictionary<Vector2, GameObject> piecesObject;
 
+    private int ply;
+
     void Awake()
     {
         piecesObject = new Dictionary<Vector2, GameObject>();
@@ -72,6 +74,7 @@ public class GameMaster : MonoBehaviour
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
+            MinMax.ply = ply;
             MinMax.NegaMax(new MinMax(board), MinMax.depth, 1, int.MinValue + 100, int.MaxValue - 100);
             stopwatch.Stop();
             UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds);
@@ -80,6 +83,7 @@ public class GameMaster : MonoBehaviour
             selectedPiece = piecesObject[new Vector2(movement.piece.position.x, movement.piece.position.y)];
             movement.DoMovement(board, false);
             MinMax.bestMove = null;
+            ply++;
         }
     }
 

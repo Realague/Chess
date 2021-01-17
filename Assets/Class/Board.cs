@@ -216,6 +216,17 @@ public class Board
         return true;
     }
 
+    public bool Check(Color side) {
+        for (int i = 0; i != 8; i++) {
+            for (int j = 0; j != 8; j++) {
+                if (pieces[i, j] != null && side == pieces[i, j].side && pieces[i, j].type == PieceType.King) {
+                    return CheckAttack(pieces[i, j].position, side);
+                }
+            }
+        }
+        return true;
+    }
+
     public List<Movement> BishopMovement(Vector2 position, VirtualPiece piece)
     {
         Vector2[] vectors = new Vector2[] { new Vector2(1, 1), new Vector2(-1, 1), new Vector2(1, -1), new Vector2(-1, -1) };

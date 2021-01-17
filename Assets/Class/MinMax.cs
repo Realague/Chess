@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class MinMax
 {
 
     public Board board;
 
-    public static int depth = 1;
+    public static int depth = 3;
 
     public MinMax(Board board)
     {
@@ -21,9 +20,10 @@ public class MinMax
 
     public static Movement bestMove = null;
 
+    public static int ply = 0;
+
     public static int NegaMax(MinMax minMax, int depthLeft, int turn, int alpha, int beta) {
         if (depthLeft == 0) {
-            //return minMax.CalculateScore(minMax);
             return MinMax.QuiescenceSearch(minMax, alpha, beta, turn);
         }
 
@@ -31,13 +31,18 @@ public class MinMax
 
         List<Movement> movements = minMax.board.GetAllMovements(turn == 1 ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark);
         if (movements.Count == 0) {
-            return turn * int.MaxValue;
+            if (minMax.board.Check(turn == 1 ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark)) {
+                return int.MinValue + 100 + ply;
+            }
+            return 0;
         }
         Movement bestSoFar = null;
         foreach (Movement movement in movements) {
+            ply++;
             movement.DoMovement(minMax.board, true);
             int score = -NegaMax(new MinMax(minMax), depthLeft - 1, -turn, -beta, -alpha);
             minMax.board.UndoMove();
+            ply--;
             if (score >= beta) {
                 return beta;
             }
@@ -68,14 +73,19 @@ public class MinMax
         }
 
         List<Movement> movements = minMax.board.GetAllMovements(turn == 1 ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark);
-        if (movements.Count == 0) {
-            return turn * int.MaxValue;
-        }
+        /*if (movements.Count == 0) {
+            if (minMax.board.Check(turn == 1 ? GameMaster.instance.turn : Color.Dark == GameMaster.instance.turn ? Color.Light : Color.Dark)) {
+                return turn * (int.MaxValue - 100);
+            }
+            return 0;
+        }*/
         foreach (Movement movement in movements) {
             if (movement.moveType == MoveType.Attack) {
+                ply++;
                 movement.DoMovement(minMax.board, true);
                 score = -QuiescenceSearch(minMax, -beta, -alpha, -turn);
                 minMax.board.UndoMove();
+                ply--;
                 if (score >= beta) {
                     return beta;
                 }
