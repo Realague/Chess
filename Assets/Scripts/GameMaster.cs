@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -20,7 +19,9 @@ public class GameMaster : MonoBehaviour
 
     public static GameMaster instance = null;
 
-    public Color turn = Color.Light;
+    public Color turn;
+
+    public Color playerColor;
 
     public GameObject selectedPiece;
 
@@ -37,6 +38,8 @@ public class GameMaster : MonoBehaviour
     public Dictionary<Vector2, GameObject> piecesObject;
 
     private int ply;
+
+    public bool start = false;
 
     void Awake()
     {
@@ -64,26 +67,25 @@ public class GameMaster : MonoBehaviour
         {
             Destroy(this);
         }
-        DontDestroyOnLoad(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (turn == Color.Dark)
-        {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            MinMax.ply = ply;
-            MinMax.NegaMax(new MinMax(board), MinMax.depth, 1, int.MinValue + 100, int.MaxValue - 100);
-            stopwatch.Stop();
-            UnityEngine.Debug.Log(stopwatch.ElapsedMilliseconds);
-            Movement movement = MinMax.bestMove;
-            UnityEngine.Debug.Log(movement);
-            selectedPiece = piecesObject[new Vector2(movement.piece.position.x, movement.piece.position.y)];
-            movement.DoMovement(board, false);
-            MinMax.bestMove = null;
-            ply++;
+        if (start) {
+            if (board.GetAllMovements(GameMaster.instance.turn).Count == 0) {
+                GetComponent<MenuManager>().DisplayEndMenu();
+            }
+            if (turn != playerColor) {
+                var pvTable = MinMax.SearchBestMove();
+                 selectedPiece = piecesObject[new Vector2(pvTable[0, 0].piece.position.x, pvTable[0, 0].piece.position.y)];
+                pvTable[0, 0].DoMovement(board, false);
+                ply++;
+            } else if (board.Check()) {
+                GetComponent<MenuManager>().DisplayCheck(true);
+            } else {
+                GetComponent<MenuManager>().DisplayCheck(false);
+            }
         }
     }
 

@@ -25,10 +25,12 @@ public class VirtualPiece
     }
 
     public VirtualPiece(VirtualPiece piece) {
-        this.type = piece.type;
-        this.side = piece.side;
-        this.position = piece.position;
-        this.isFirstMove = piece.isFirstMove;
+        //if (piece != null) {
+            this.type = piece.type;
+            this.side = piece.side;
+            this.position = piece.position;
+            this.isFirstMove = piece.isFirstMove;
+        //}
     }
 
 }

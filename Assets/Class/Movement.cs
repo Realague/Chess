@@ -28,7 +28,7 @@ public class Movement
                 if (!isVirtual) {
                     GameMaster.instance.Move(piece.position, position);
                 }
-                board.MovePiece(position, piece.position);
+                board.MovePiece(position, piece.position, piece);
                 break;
             case MoveType.MovePawn:
                 if (!isVirtual) {

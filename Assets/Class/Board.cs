@@ -61,6 +61,9 @@ public class Board
         //Debug.Log(position);
         //Debug.Log(oldPosition);
         VirtualPiece piece = pieces[(int)oldPosition.x, (int)oldPosition.y];
+        //if (piece == null) {
+          //  return;
+        //}
         //Debug.Log(piece);
         pieces[(int)position.x, (int)position.y] = new VirtualPiece(piece);
         pieces[(int)oldPosition.x, (int)oldPosition.y] = null;
@@ -334,7 +337,7 @@ public class Board
 
     public List<Movement> QueenMovement(Vector2 position, VirtualPiece piece)
     {
-        List<Movement> movements = new List<Movement>();
+        List<Movement> movements;
         movements = RookMovement(position, piece);
         movements.AddRange(BishopMovement(position, piece));
         return movements;

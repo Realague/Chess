@@ -2,7 +2,7 @@
 public class PositionEvaluation {
 
    private static int[] pawn = new int[8 * 8] {
-      900, 900, 900, 900, 900, 900, 900, 900 ,
+      900, 900, 900, 900, 900, 900, 900, 900,
       50, 50, 50, 50, 50, 50, 50, 50,
       10, 10, 20, 30, 30, 20, 10, 10,
       5,  5, 10, 25, 25, 10,  5,  5 ,
@@ -98,7 +98,11 @@ public class PositionEvaluation {
                 score = queen[position];
                 break;
             case PieceType.King:
-                score = kingMidleGame[position];
+                if (MinMax.gameStage == GameStage.Late) {
+                    score = kingEndGame[position];
+                } else {
+                    score = kingMidleGame[position];
+                }
                 break;
             default:
                 break;

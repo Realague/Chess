@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum Color
 {
-    Dark,
-    Light
+    Dark = 0,
+    Light = 1,
+    None = 2
 }
