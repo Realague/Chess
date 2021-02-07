@@ -75,10 +75,9 @@ public class GameMaster : MonoBehaviour
         if (start) {
             if (board.GetAllMovements(GameMaster.instance.turn).Count == 0) {
                 GetComponent<MenuManager>().DisplayEndMenu();
-            }
-            if (turn != playerColor) {
+            } else if (turn != playerColor) {
                 var pvTable = MinMax.SearchBestMove();
-                 selectedPiece = piecesObject[new Vector2(pvTable[0, 0].piece.position.x, pvTable[0, 0].piece.position.y)];
+                selectedPiece = piecesObject[new Vector2(pvTable[0, 0].piece.position.x, pvTable[0, 0].piece.position.y)];
                 pvTable[0, 0].DoMovement(board, false);
                 ply++;
             } else if (board.Check()) {

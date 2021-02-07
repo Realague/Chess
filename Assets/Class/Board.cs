@@ -24,7 +24,6 @@ public class Board
 
     public Board(Board board)
     {
-        pieces = new VirtualPiece[8, 8];
         for (int i = 0; i != 8; i++) {
             for (int j = 0; j != 8; j++) {
                 if (board.pieces[i, j] == null) {
@@ -42,7 +41,6 @@ public class Board
     }
 
     public void AddPiece(VirtualPiece piece) {
-        //Debug.Log("piece: " + piece.position);
         pieces[(int)piece.position.x, (int)piece.position.y] = piece;
     }
 
@@ -58,13 +56,7 @@ public class Board
     }
 
     public void MovePiece(Vector2 position, Vector2 oldPosition) {
-        //Debug.Log(position);
-        //Debug.Log(oldPosition);
         VirtualPiece piece = pieces[(int)oldPosition.x, (int)oldPosition.y];
-        //if (piece == null) {
-          //  return;
-        //}
-        //Debug.Log(piece);
         pieces[(int)position.x, (int)position.y] = new VirtualPiece(piece);
         pieces[(int)oldPosition.x, (int)oldPosition.y] = null;
         pieces[(int)position.x, (int)position.y].position = position;
@@ -244,7 +236,7 @@ public class Board
                 moveType = CheckMove(newPosition, piece);
                 if (moveType != MoveType.Blocked)
                 {
-                    movements.Add(new Movement(newPosition, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(newPosition) : null));
+                    movements.Add(new Movement(newPosition, piece, moveType, moveType == MoveType.Attack ? CheckCase(newPosition) : null));
                 }
             }
         }
@@ -262,13 +254,13 @@ public class Board
         {
             moveType = CheckMove(position + pos, piece);
             if (moveType != MoveType.Blocked) {
-                previousMove.Push(new Movement(position + pos, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
+                previousMove.Push(new Movement(position + pos, piece, moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
                 if (moveType == MoveType.Attack) {
                     RemovePiece(position + pos);
                 }
                 MovePiece(position + pos, piece.position);
                 if (depth >= 2 || !CheckAttack(position + pos, piece.side)) {
-                    movements.Add(new Movement(position + pos, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
+                    movements.Add(new Movement(position + pos, piece, moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
                 }
                 UndoMove();
             }
@@ -288,7 +280,7 @@ public class Board
             moveType = CheckMove(position + pos, piece);
             if (moveType != MoveType.Blocked)
             {
-                movements.Add(new Movement(position + pos, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
+                movements.Add(new Movement(position + pos, piece, moveType, moveType == MoveType.Attack ? CheckCase(position + pos) : null));
             }
         }
 
@@ -309,13 +301,13 @@ public class Board
         moveType = CheckMove(position + new Vector2(0, 1 * multiplier), piece);
         if (moveType == MoveType.Move)
         {
-            movements.Add(new Movement(position + new Vector2(0, 1 * multiplier), new VirtualPiece(piece), MoveType.MovePawn, null));
+            movements.Add(new Movement(position + new Vector2(0, 1 * multiplier), piece, MoveType.MovePawn, null));
             if (piece.isFirstMove)
             {
                 moveType = CheckMove(position + new Vector2(0, 2 * multiplier), piece);
                 if (moveType != MoveType.Blocked && moveType != MoveType.Attack)
                 {
-                    movements.Add(new Movement(position + new Vector2(0, 2 * multiplier), new VirtualPiece(piece), MoveType.MovePawn, null));
+                    movements.Add(new Movement(position + new Vector2(0, 2 * multiplier), piece, MoveType.MovePawn, null));
                 }
             }
         }
@@ -323,13 +315,13 @@ public class Board
         moveType = CheckMove(position + new Vector2(1, 1 * multiplier), piece);
         if (moveType == MoveType.Attack)
         {
-            movements.Add(new Movement(position + new Vector2(1, 1 * multiplier), new VirtualPiece(piece), moveType, CheckCase(position + new Vector2(1, 1 * multiplier))));
+            movements.Add(new Movement(position + new Vector2(1, 1 * multiplier), piece, moveType, CheckCase(position + new Vector2(1, 1 * multiplier))));
         }
 
         moveType = CheckMove(position + new Vector2(-1, 1 * multiplier), piece);
         if (moveType == MoveType.Attack)
         {
-            movements.Add(new Movement(position + new Vector2(-1, 1 * multiplier), new VirtualPiece(piece), moveType, CheckCase(position + new Vector2(-1, 1 * multiplier))));
+            movements.Add(new Movement(position + new Vector2(-1, 1 * multiplier), piece, moveType, CheckCase(position + new Vector2(-1, 1 * multiplier))));
         }
 
         return movements;
@@ -357,9 +349,9 @@ public class Board
                 if (newPosition.x >= 0 && newPosition.x < 8 && newPosition.y >= 0 && newPosition.y < 8) {
                     moveType = CheckMove(newPosition, piece);
                     if (moveType != MoveType.Blocked) {
-                        movements.Add(new Movement(newPosition, new VirtualPiece(piece), moveType, moveType == MoveType.Attack ? CheckCase(newPosition) : null));
+                        movements.Add(new Movement(newPosition, piece, moveType, moveType == MoveType.Attack ? CheckCase(newPosition) : null));
                     } else if (depth < 2 && CheckCastling(newPosition, piece) && !RemoveCheckCastling(piece)) {
-                        movements.Add(new Movement(newPosition, new VirtualPiece(piece), MoveType.Castling, CheckCase(newPosition)));
+                        movements.Add(new Movement(newPosition, piece, MoveType.Castling, CheckCase(newPosition)));
                     }
                 } else {
                     moveType = MoveType.Blocked;
@@ -396,7 +388,7 @@ public class Board
              MovePiece(move.piece.position, move.position);
         } else if (move.moveType == MoveType.Attack) {
             MovePiece(move.piece.position, move.position);
-            AddPiece(new VirtualPiece(move.pieceAttacked));
+            AddPiece(move.pieceAttacked);
         } else if (move.moveType == MoveType.Castling) {
             float y = move.piece.position.y;
             if (move.piece.position.x == 0) {
