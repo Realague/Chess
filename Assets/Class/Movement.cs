@@ -20,6 +20,17 @@ public class Movement
         this.pieceAttacked = pieceAttacked;
     }
 
+    public Movement(Movement move) {
+        this.position = move.position;
+        this.piece = new VirtualPiece(move.piece);
+        this.moveType = move.moveType;
+        if (move.pieceAttacked != null) {
+            this.pieceAttacked = new VirtualPiece(move.pieceAttacked);
+        } else {
+            this.pieceAttacked = null;
+        }
+    }
+
     public void DoMovement(Board board, bool isVirtual)
     {
         switch (moveType)
@@ -59,9 +70,9 @@ public class Movement
         if (!isVirtual)
         {
             GameMaster.instance.EndTurn();
-        } else {
-            board.previousMove.Push(this);
-        }
+        } /*else {
+            board.previousMove.Push(new Movement(this));
+        }*/
     }
 
     private void HandleCastling(Board board, bool isVirtual)

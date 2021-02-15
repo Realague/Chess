@@ -13,16 +13,26 @@ public class SortMoves {
         { 100, 200, 300, 400, 500, 600 }
     };
 
-    private static int ScoreMove(Movement movement, MinMax minMax) {
+    private static int ScoreMove(Movement movement) {
+        if (MinMax.scorePv) {
+            // make sure we are dealing with PV move
+            if (MinMax.pvTable[0, MinMax.ply] == movement) {
+                // disable score PV flag
+                MinMax.scorePv = false;
+
+                return 20000;
+            }
+        }
+
         if (movement.moveType == MoveType.Attack) {
             return mvvLva[TypeToId(movement.piece.type), TypeToId(movement.pieceAttacked.type)] + 10000;
-        } else if (minMax.ply < MinMax.MAX_PLY) {
-            if (minMax.killerMoves[0, minMax.ply] == movement) {
+        } else if (MinMax.ply < MinMax.MAX_PLY) {
+            if (MinMax.killerMoves[0, MinMax.ply] == movement) {
                 return 9000;
-            } else if (minMax.killerMoves[1, minMax.ply] == movement) {
+            } else if (MinMax.killerMoves[1, MinMax.ply] == movement) {
                 return 8000;
-            } else if (minMax.historyMoves.ContainsKey(new KeyValuePair<VirtualPiece, int>(movement.piece, (int)(movement.position.x + movement.position.y * 8)))) {
-                return minMax.historyMoves[new KeyValuePair<VirtualPiece, int>(movement.piece, (int)(movement.position.x + movement.position.y * 8))];
+            } else if (MinMax.historyMoves.ContainsKey(new KeyValuePair<VirtualPiece, int>(movement.piece, (int)(movement.position.x + movement.position.y * 8)))) {
+                return MinMax.historyMoves[new KeyValuePair<VirtualPiece, int>(movement.piece, (int)(movement.position.x + movement.position.y * 8))];
             } else {
                 return 0;
             }
@@ -30,11 +40,11 @@ public class SortMoves {
         return 0;
     }
 
-    public static List<Movement> SortMove(List<Movement> movements, MinMax minMax) {
+    public static List<Movement> SortMove(List<Movement> movements) {
         List<int> scores = new List<int>();
 
         foreach (Movement movement in movements) {
-            scores.Add(ScoreMove(movement, minMax));
+            scores.Add(ScoreMove(movement));
         }
 
         for (int i = 0; i != movements.Count; i++) {
@@ -56,7 +66,7 @@ public class SortMoves {
     public static void PrintMoves(List<Movement> movements) {
         Debug.Log("Print move score");
         foreach (Movement movement in movements) {
-            //Debug.Log(ScoreMove(movement));
+            Debug.Log(ScoreMove(movement));
         }
     }
 

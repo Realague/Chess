@@ -25,12 +25,26 @@ public class VirtualPiece
     }
 
     public VirtualPiece(VirtualPiece piece) {
-        //if (piece != null) {
-            this.type = piece.type;
-            this.side = piece.side;
-            this.position = piece.position;
-            this.isFirstMove = piece.isFirstMove;
-        //}
+        this.type = piece.type;
+        this.side = piece.side;
+        this.position = piece.position;
+        this.isFirstMove = piece.isFirstMove;
     }
 
+    public override bool Equals(object obj) {
+        return obj is VirtualPiece piece &&
+               type == piece.type &&
+               side == piece.side &&
+               position.Equals(piece.position) &&
+               isFirstMove == piece.isFirstMove;
+    }
+
+    public override int GetHashCode() {
+        int hashCode = -1072877299;
+        hashCode = hashCode * -1521134295 + type.GetHashCode();
+        hashCode = hashCode * -1521134295 + side.GetHashCode();
+        hashCode = hashCode * -1521134295 + position.GetHashCode();
+        hashCode = hashCode * -1521134295 + isFirstMove.GetHashCode();
+        return hashCode;
+    }
 }

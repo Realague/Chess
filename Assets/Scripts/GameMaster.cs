@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -75,6 +75,7 @@ public class GameMaster : MonoBehaviour
         if (start) {
             if (board.GetAllMovements(GameMaster.instance.turn).Count == 0) {
                 GetComponent<MenuManager>().DisplayEndMenu();
+                start = false;
             } else if (turn != playerColor) {
                 var pvTable = MinMax.SearchBestMove();
                 selectedPiece = piecesObject[new Vector2(pvTable[0, 0].piece.position.x, pvTable[0, 0].piece.position.y)];
@@ -149,7 +150,6 @@ public class GameMaster : MonoBehaviour
     private GameObject CreateMove(GameObject prefab, Movement movement) {
         GameObject move = Instantiate(prefab, Utils.Vector2ToVector3(movement.position), new Quaternion(45, 0, 0, 45));
         move.GetComponent<MovementScript>().movement = movement;
-        //move.transform.parent = piecesObject[new Vector2(movement.piece.position.x, movement.piece.position.y)].transform;
         return move;
     }
 }

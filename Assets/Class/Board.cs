@@ -41,7 +41,7 @@ public class Board
     }
 
     public void AddPiece(VirtualPiece piece) {
-        pieces[(int)piece.position.x, (int)piece.position.y] = piece;
+        pieces[(int)piece.position.x, (int)piece.position.y] = new VirtualPiece(piece);
     }
 
     public void RemovePiece(Vector2 position)
@@ -64,8 +64,15 @@ public class Board
 
     public VirtualPiece CheckCase(Vector2 position)
     {
-        return pieces[(int)position.x, (int)position.y];
+        if (position.x < 8 && position.x >= 0 && 
+            position.y < 9 && position.y >= 0) {
+            return pieces[(int)position.x, (int)position.y];
+        } else {
+            return null;
+        }
     }
+
+
 
     //Determine the move type
     public MoveType CheckMove(Vector2 position, VirtualPiece piece)
@@ -401,4 +408,15 @@ public class Board
         }
     }
 
+    public override int GetHashCode() {
+        int hashCode = -1072877299;
+        for (int i = 0; i != 8; i++) {
+            for (int j = 0; j != 8; j++) {
+                if (pieces[i, j] != null) {
+                    hashCode = hashCode * -1521134295 + pieces[i, j].GetHashCode();
+                }
+            }
+        }
+        return hashCode;
+    }
 }
