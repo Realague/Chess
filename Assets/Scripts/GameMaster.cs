@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GameMaster : MonoBehaviour
 {
-
+    //https://www.youtube.com/watch?v=CgvZMsJImJg&list=PLmN0neTso3Jxh8ZIylk74JpwfiWNI76Cs&index=81
     [SerializeField]
     private GameObject highlightedMove;
 
